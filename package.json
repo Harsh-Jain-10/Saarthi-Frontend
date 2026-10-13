@@ -1,0 +1,14 @@
+{
+  "name": "srmuh-homepage-clone",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host --port 5173 --open",
+    "build": "vite build",
+    "preview": "vite preview --host --port 4173"
+  },
+  "devDependencies": {
+    "vite": "^5.4.8"
+  }
+}

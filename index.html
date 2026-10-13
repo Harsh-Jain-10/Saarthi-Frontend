@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>SRM University Delhi-NCR, Sonepat | Haryana | Admissions 2026-27</title>
+  <meta name="description" content="Official homepage clone of SRM University Delhi-NCR, Sonepat (Haryana). NAAC A+ accredited top-ranked multidisciplinary private university offering Engineering, Law, Management, Science, and Humanities." />
+
+  <!-- Google Fonts: Cinzel (for SRM), Open Sans, Roboto, Playfair Display -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- FIXED UTILITY & STICKY HEADER WRAPPER -->
+  <header class="header-fixed-container" id="site-header">
+    <!-- 1. Top Utility Bar -->
+    <div class="top-utility-bar">
+      <div class="utility-container">
+        <!-- Left: WhatsApp & Headset Icons -->
+        <div class="utility-left-cluster">
+          <a href="https://wa.me/918816033306" target="_blank" rel="noopener noreferrer" class="utility-icon-link" aria-label="WhatsApp Helpline">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.42 0-2.82-.37-4.06-1.08l-.29-.17-3.12.82.83-3.04-.19-.3a8.196 8.196 0 0 1-1.26-4.46c0-4.54 3.7-8.24 8.25-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.38-.44.12-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.34-.76-1.84-.2-.49-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.41 1.01 2.58c.13.17 1.75 2.67 4.23 3.75.59.25 1.05.41 1.41.53.6.19 1.14.16 1.57.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29z"/>
+            </svg>
+          </a>
+          <a href="tel:+918816033301" class="utility-icon-link" aria-label="Admissions Helpline">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="utility-divider">|</div>
+
+        <!-- Center: 5 Social Icons -->
+        <div class="utility-center-cluster">
+          <div class="utility-socials">
+            <a href="#demo-social" class="social-icon" aria-label="Facebook"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7v-7h-2v-3h2V8.5A3.5 3.5 0 0 1 17.5 5H20v3h-2a1 1 0 0 0-1 1v2h3l-.5 3h-2.5v7H19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/></svg></a>
+            <a href="#demo-social" class="social-icon" aria-label="X Twitter"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a href="#demo-social" class="social-icon" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8 19H5v-9h3v9zM6.5 8.75A1.75 1.75 0 1 1 6.5 5.25a1.75 1.75 0 0 1 0 3.5zM19 19h-3v-4.5c0-1.2-.8-1.5-1.5-1.5s-1.5.3-1.5 1.5V19h-3v-9h3v1.2c.4-.7 1.5-1.2 2.7-1.2 2.3 0 3.3 1.5 3.3 3.8V19z"/></svg></a>
+            <a href="#demo-social" class="social-icon" aria-label="YouTube"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43zM9.75 15.02V8.5l5.75 3.26-5.75 3.26z"/></svg></a>
+            <a href="#demo-social" class="social-icon" aria-label="Instagram"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/></svg></a>
+          </div>
+        </div>
+
+        <div class="utility-divider">|</div>
+
+        <!-- Right: Chevron & Search Icons -->
+        <div class="utility-right-cluster">
+          <button type="button" class="utility-chevron-btn" id="portal-quick-dropdown" aria-label="Portals dropdown">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.5" fill="none"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button type="button" class="utility-search-btn" id="utility-search-toggle" aria-label="Search SRM website">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.3" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Main Sticky Header -->
+    <div class="main-header">
+      <div class="header-container">
+        <!-- SRM University Brand Logo (Emblem + SRM / Line / UNIVERSITY / DELHI-NCR, SONEPAT) -->
+        <a href="#hero" class="brand-logo" aria-label="SRM University Delhi-NCR, Sonepat Homepage">
+          <div class="brand-emblem-svg">
+            <svg viewBox="0 0 100 100" width="56" height="56" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="rayGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                  <stop offset="0%" stop-color="#F26437"/>
+                  <stop offset="100%" stop-color="#FF9020"/>
+                </linearGradient>
+                <path id="topCurve" d="M 23,52 A 27,27 0 0,1 77,52" fill="none"/>
+                <path id="botCurve" d="M 27,57 A 23,23 0 0,0 73,57" fill="none"/>
+                <path id="ribbonCurve" d="M 15,86 Q 50,93 85,86" fill="none"/>
+              </defs>
+
+              <!-- Bold Fanning Sunburst Orange Rays around top half -->
+              <g fill="#F26437">
+                <polygon points="50,4 47,24 53,24"/>
+                <polygon points="38,7 38,26 43,24"/>
+                <polygon points="62,7 57,24 62,26"/>
+                <polygon points="27,13 30,29 35,26"/>
+                <polygon points="73,13 65,26 70,29"/>
+                <polygon points="17,22 23,34 28,30"/>
+                <polygon points="83,22 72,30 77,34"/>
+                <polygon points="9,34 18,41 22,36"/>
+                <polygon points="91,34 78,36 82,41"/>
+                <polygon points="5,48 16,49 19,44"/>
+                <polygon points="95,48 81,44 84,49"/>
+                <polygon points="6,62 17,58 19,53"/>
+                <polygon points="94,62 81,53 83,58"/>
+              </g>
+
+              <!-- Outer Medallion Disc -->
+              <circle cx="50" cy="52" r="30" fill="#002D7A" stroke="#F9A62F" stroke-width="2"/>
+              <circle cx="50" cy="52" r="27.5" fill="none" stroke="#FFFFFF" stroke-width="0.8"/>
+              <circle cx="50" cy="52" r="19.5" fill="none" stroke="#F9A62F" stroke-width="0.8"/>
+
+              <!-- Circular Text: SRM UNIVERSITY -->
+              <text font-family="'Roboto', sans-serif" font-size="5" font-weight="900" fill="#FFFFFF" letter-spacing="0.7">
+                <textPath href="#topCurve" startOffset="50%" text-anchor="middle">SRM UNIVERSITY</textPath>
+              </text>
+
+              <!-- Circular Text: DELHI-NCR -->
+              <text font-family="'Roboto', sans-serif" font-size="4.2" font-weight="800" fill="#F9A62F" letter-spacing="0.6">
+                <textPath href="#botCurve" startOffset="50%" text-anchor="middle">DELHI-NCR</textPath>
+              </text>
+
+              <!-- Center Sky Blue Disc with White Tree -->
+              <circle cx="50" cy="52" r="18.5" fill="#5890D4"/>
+
+              <!-- Tree Trunk & Roots -->
+              <path d="M48,62 C49,58 48,55 47,53 C49,54 51,54 53,53 C52,55 51,58 52,62 Z" fill="#FFFFFF"/>
+              <!-- Tree Foliage Canopy -->
+              <circle cx="50" cy="44" r="7.5" fill="#FFFFFF"/>
+              <circle cx="43" cy="47" r="5.5" fill="#FFFFFF"/>
+              <circle cx="57" cy="47" r="5.5" fill="#FFFFFF"/>
+              <circle cx="39" cy="50" r="4" fill="#FFFFFF"/>
+              <circle cx="61" cy="50" r="4" fill="#FFFFFF"/>
+              <circle cx="46" cy="40" r="4.5" fill="#FFFFFF"/>
+              <circle cx="54" cy="40" r="4.5" fill="#FFFFFF"/>
+              <!-- Branches detail -->
+              <path d="M50,53 L50,46 M49,49 L44,46 M51,49 L56,46" stroke="#5890D4" stroke-width="0.9" fill="none"/>
+              <!-- Open Book at Base -->
+              <path d="M42,63 C45,61.5 49,62 50,63.5 C51,62 55,61.5 58,63 L57,65 C54,63.5 51,64 50,65.5 C49,64 46,63.5 43,65 Z" fill="#FFFFFF"/>
+
+              <!-- Bottom Ribbon Banner with "LEARN. LEAP. LEAD." -->
+              <polygon points="10,87 23,82 23,90 14,92" fill="#E05020" stroke="#B83A10" stroke-width="0.5"/>
+              <polygon points="90,87 77,82 77,90 86,92" fill="#E05020" stroke="#B83A10" stroke-width="0.5"/>
+              <path d="M 16,82 Q 50,89 84,82 L 82,90 Q 50,97 18,90 Z" fill="#FFFFFF" stroke="#F9A62F" stroke-width="0.8"/>
+              <text font-family="'Roboto', sans-serif" font-size="4.2" font-weight="900" fill="#003A9B" letter-spacing="0.5">
+                <textPath href="#ribbonCurve" startOffset="50%" text-anchor="middle">LEARN. LEAP. LEAD.</textPath>
+              </text>
+            </svg>
+          </div>
+          <!-- SRM Typography: SRM / Line / UNIVERSITY / DELHI-NCR, SONEPAT -->
+          <div class="brand-text">
+            <div class="brand-srm">SRM</div>
+            <div class="brand-line"></div>
+            <div class="brand-university">UNIVERSITY</div>
+            <div class="brand-location">DELHI-NCR, SONEPAT</div>
+          </div>
+        </a>
+
+        <!-- Middle Badges: NAAC A+ 3D Gold and Celebrating 50 Years -->
+        <div class="header-badges">
+          <!-- 3D Gold NAAC A+ Badge -->
+          <div class="naac-badge-3d" title="NAAC A+ Grade Accredited">
+            <div class="naac-text-top">NAAC A+</div>
+            <div class="naac-text-bottom">GRADE ACCREDITED</div>
+          </div>
+
+          <!-- Celebrating 50 Years Emblem Badge -->
+          <div class="excellence-badge-50" title="Celebrating 50 Years of Excellence">
+            <svg viewBox="0 0 70 70" width="46" height="46">
+              <defs>
+                <linearGradient id="badge50Gold" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FFF5B8"/>
+                  <stop offset="50%" stop-color="#E5BE42"/>
+                  <stop offset="100%" stop-color="#9C7311"/>
+                </linearGradient>
+                <path id="archCelebrating" d="M 14,35 A 22,22 0 0,1 56,35" fill="none"/>
+              </defs>
+              <circle cx="35" cy="35" r="32" fill="#002b75" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="3,2"/>
+              <circle cx="35" cy="35" r="28" fill="none" stroke="#F9A62F" stroke-width="0.8"/>
+              <text font-family="'Roboto', sans-serif" font-size="6.2" font-weight="800" fill="#FFFFFF" letter-spacing="0.8">
+                <textPath href="#archCelebrating" startOffset="50%" text-anchor="middle">CELEBRATING</textPath>
+              </text>
+              <text x="35" y="41" text-anchor="middle" font-family="'Cinzel', 'Playfair Display', serif" font-weight="900" font-size="22" fill="url(#badge50Gold)" stroke="#523902" stroke-width="0.5">50</text>
+              <path d="M 12,47 L 17,44 L 53,44 L 58,47 L 54,53 L 50,50 L 20,50 L 16,53 Z" fill="#B91C1C" stroke="#7F1D1D" stroke-width="0.5"/>
+              <text x="35" y="49" text-anchor="middle" font-family="'Open Sans', sans-serif" font-size="4" font-weight="700" fill="#FFEBAA" letter-spacing="0.2">Years of Excellence</text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Hamburger Button -->
+        <button type="button" class="hamburger-btn" id="menu-toggle-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-nav-drawer">
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Animated Slide-in Navigation Drawer -->
+  <div class="nav-drawer-backdrop" id="nav-drawer-backdrop"></div>
+  <aside class="nav-drawer" id="mobile-nav-drawer" aria-label="Primary Site Navigation" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-brand">
+        <span class="drawer-title">SRM UNIVERSITY</span>
+        <span class="drawer-sub">Delhi-NCR, Sonepat</span>
+      </div>
+      <button type="button" class="drawer-close-btn" id="drawer-close-btn" aria-label="Close navigation menu">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <nav class="drawer-nav">
+      <ul class="drawer-menu-list">
+        <li><a href="#hero" class="drawer-nav-link" data-target="hero">About</a></li>
+        <li><a href="#search-programmes" class="drawer-nav-link" data-target="search-programmes">Admissions 2026-27</a></li>
+        <li><a href="#study-departments" class="drawer-nav-link" data-target="study-departments">Academics & Departments</a></li>
+        <li><a href="#academic-excellence" class="drawer-nav-link" data-target="academic-excellence">Faculties</a></li>
+        <li><a href="#research-stats" class="drawer-nav-link" data-target="research-stats">Research & Innovation</a></li>
+        <li><a href="#placements" class="drawer-nav-link" data-target="placements">Placements</a></li>
+        <li><a href="#spotlight" class="drawer-nav-link" data-target="spotlight">Campus Life & Spotlight</a></li>
+        <li><a href="#testimonials" class="drawer-nav-link" data-target="testimonials">Alumni & Testimonials</a></li>
+        <li><a href="#events-calendar" class="drawer-nav-link" data-target="events-calendar">Events Calendar</a></li>
+        <li><a href="#site-footer" class="drawer-nav-link" data-target="site-footer">Contact Us</a></li>
+      </ul>
+      <div class="drawer-cta-wrapper">
+        <a href="#search-programmes" class="drawer-apply-btn" id="drawer-apply-action">Apply Online Now →</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- 3. Fixed Left Edge Tabs -->
+  <aside class="fixed-left-tabs" aria-label="Quick Access Tabs">
+    <button type="button" class="left-tab-accessibility" id="accessibility-tab" aria-label="Accessibility Options" title="Accessibility Tools">
+      <!-- Person SVG -->
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <circle cx="12" cy="4" r="2.5"/>
+        <path d="M12 8c-3.5 0-6 1.8-6 4v1h3v7h6v-7h3v-1c0-2.2-2.5-4-6-4z"/>
+      </svg>
+    </button>
+    <a href="#demo-convocation" class="left-tab-convocation" id="convocation-tab" aria-label="SRMUH Third Convocation 2025" title="SRMUH Third Convocation 2025">
+      <span>SRMUH Third Convocation 2025</span>
+    </a>
+  </aside>
+
+  <!-- MAIN SCROLLABLE CONTENT (12 SECTIONS STACKED IN EXACT ORDER) -->
+  <main id="main-content" class="site-main">
+
+    <!-- SECTION 1: HERO -->
+    <section class="section-hero" id="hero" aria-label="Admissions 2026-27 Hero Banner">
+      <div class="hero-bg-media">
+        <!-- Visual canvas with animated tech-particles + gradient poster -->
+        <canvas id="hero-particles-canvas" class="hero-canvas"></canvas>
+        <div class="hero-overlay"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-tag">ADMISSIONS OPEN FOR 2026-27</div>
+        <h1 class="hero-title">Accepting Applications</h1>
+        <h2 class="hero-subtitle">Admissions 2026-27</h2>
+        <p class="hero-description">
+          A Place for Learning, Discovery, Innovation, Expression and Research.
+        </p>
+        <div class="hero-actions">
+          <a href="#search-programmes" class="btn-amber-apply" id="hero-apply-btn">Apply Now →</a>
+          <a href="#academic-excellence" class="btn-outline-explore" id="hero-explore-btn">Explore Faculties</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: ACCREDITATION STRIP -->
+    <section class="section-accreditation" id="accreditations" aria-label="Accreditations and Recognitions">
+      <div class="accreditation-container" id="accreditation-cards-wrapper">
+        <!-- Dynamically rendered from data.js or fallback -->
+      </div>
+    </section>
+
+    <!-- SECTION 3: SEARCH FOR PROGRAMMES -->
+    <section class="section-search-programmes" id="search-programmes" aria-label="Search For Programmes">
+      <div class="search-prog-container">
+        <div class="search-prog-card">
+          <h2 class="search-heading">
+            <span class="search-highlight">SEARCH FOR</span>
+            <span class="search-bold">PROGRAMMES</span>
+          </h2>
+          <form class="search-prog-form" id="programmes-search-form">
+            <div class="dropdown-wrapper">
+              <label for="degree-select" class="visually-hidden">Select Degree</label>
+              <select id="degree-select" class="programmes-dropdown" aria-label="Select Degree">
+                <option value="" disabled selected>Select Degree</option>
+              </select>
+            </div>
+            <div class="dropdown-wrapper">
+              <label for="interest-select" class="visually-hidden">Select Interest</label>
+              <select id="interest-select" class="programmes-dropdown" aria-label="Select Interest">
+                <option value="" disabled selected>Select Interest</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-orange-explore" id="explore-programmes-btn">
+              Explore Now
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ORANGE BANNER -->
+    <section class="section-credit-card-banner" id="bihar-scheme-banner" aria-label="Bihar Student Credit Card Scheme">
+      <div class="credit-banner-container">
+        <a href="#demo-scheme" class="credit-banner-link" id="bihar-scheme-link">
+          <span class="credit-banner-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+          </span>
+          <span class="credit-banner-text">Know More About Bihar Student Credit Card Scheme</span>
+          <span class="credit-banner-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SECTION 5: WHAT WOULD YOU LIKE TO STUDY? -->
+    <section class="section-departments" id="study-departments" aria-label="What Would You Like To Study">
+      <div class="site-container">
+        <div class="section-header-box">
+          <h2 class="section-main-heading">WHAT WOULD YOU LIKE TO STUDY?</h2>
+          <div class="heading-underline"></div>
+        </div>
+        <div class="departments-grid" id="departments-grid-container">
+          <!-- 18 grey cards with black line icon & centered label rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: ACADEMIC EXCELLENCE AT SRM UNIVERSITY, SONEPAT -->
+    <section class="section-academic-excellence" id="academic-excellence" aria-label="Academic Excellence at SRM University, Sonepat">
+      <div class="site-container">
+        <div class="excellence-header">
+          <h2 class="excellence-heading">ACADEMIC EXCELLENCE AT SRM UNIVERSITY, SONEPAT</h2>
+          <p class="excellence-lead-text">
+            Our exemplary educational model is unmatchable as it incorporates the world's leading techniques, theories, resources, and standards.
+          </p>
+        </div>
+        <div class="faculties-stack" id="faculties-stack-container">
+          <!-- Stacked faculty cards rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: SPOTLIGHT -->
+    <section class="section-spotlight" id="spotlight" aria-label="Campus Spotlight and Recent Events">
+      <div class="site-container">
+        <div class="section-header-box">
+          <h2 class="section-main-heading">SPOTLIGHT</h2>
+          <div class="heading-underline"></div>
+        </div>
+        <div class="spotlight-carousel-wrapper">
+          <button type="button" class="carousel-arrow arrow-left" id="spotlight-prev" aria-label="Previous spotlight slide">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="spotlight-slider" id="spotlight-slider" tabindex="0">
+            <!-- Carousel items rendered dynamically -->
+          </div>
+          <button type="button" class="carousel-arrow arrow-right" id="spotlight-next" aria-label="Next spotlight slide">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: JOIN SRMUH- THE CENTRE FOR RESEARCH & INNOVATION -->
+    <section class="section-research-innovation" id="research-stats" aria-label="Join SRMUH The Centre For Research and Innovation">
+      <div class="research-overlay"></div>
+      <div class="site-container research-inner">
+        <h2 class="research-heading">JOIN SRMUH- THE CENTRE FOR RESEARCH & INNOVATION</h2>
+        <p class="research-subline">Be A Part Of The No.1 University & Upskill Your Creative Instincts</p>
+        <div class="diamond-divider" aria-hidden="true">
+          <span class="line"></span>
+          <span class="diamond">◆</span>
+          <span class="line"></span>
+        </div>
+        <div class="stats-counters-grid" id="stats-counters-container">
+          <!-- Big animated counters rendered from data.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: PLACEMENTS -->
+    <section class="section-placements" id="placements" aria-label="Placements and Corporate Partners">
+      <div class="site-container">
+        <div class="placements-header">
+          <h2 class="placements-heading">READY TO LEARN, LEAP AND LEAD IN OUR DIVERSE & CHANGING WORLD</h2>
+          <div class="placements-paragraphs">
+            <p>
+              SRM University Delhi-NCR, Sonepat have well-planned training programmes to facilitate students with full training & placement assistance in various industries throughout India. The training & placement department consist of dedicated and well-experienced members who acts as a guiding force for students to achieve the best in the industry.
+            </p>
+            <p>
+              Every year new companies leading in their respective industries visit the campus for recruiting our students.
+            </p>
+          </div>
+          <div class="placements-action">
+            <a href="#testimonials" class="btn-amber-pill" id="placements-view-more">View More →</a>
+          </div>
+        </div>
+        <!-- 4-Column White Recruiter Grid -->
+        <div class="recruiters-grid" id="recruiters-grid-container">
+          <!-- 18 recruiter wordmark cards -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: STUDENT TESTIMONIALS -->
+    <section class="section-testimonials" id="testimonials" aria-label="Student Testimonials">
+      <div class="site-container">
+        <div class="section-header-box">
+          <h2 class="section-main-heading">STUDENT TESTIMONIALS</h2>
+          <div class="heading-underline"></div>
+        </div>
+        <div class="testimonials-carousel" id="testimonials-carousel-wrapper">
+          <div class="testimonials-track" id="testimonials-track">
+            <!-- Testimonial card rendered dynamically -->
+          </div>
+          <!-- 4 Pagination Dots (Active is blue pill, others grey) -->
+          <div class="testimonial-pagination" id="testimonial-pagination" role="tablist" aria-label="Testimonial slides">
+          </div>
+          <div class="testimonials-action">
+            <button type="button" class="btn-amber-pill" id="testimonials-view-more">View More</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 11: EVENTS CALENDAR -->
+    <section class="section-events-calendar" id="events-calendar" aria-label="University Events and Academic Calendar">
+      <div class="site-container">
+        <div class="calendar-wrapper">
+          <!-- Blue Calendar Widget -->
+          <div class="calendar-widget-card">
+            <div class="calendar-nav-bar">
+              <h2 class="calendar-month-title" id="calendar-current-month">October 2026</h2>
+              <div class="calendar-controls">
+                <button type="button" class="btn-cal-today" id="calendar-today-btn">Today</button>
+                <div class="cal-arrows">
+                  <button type="button" class="btn-cal-arrow" id="calendar-prev-month" aria-label="Previous month">‹</button>
+                  <button type="button" class="btn-cal-arrow" id="calendar-next-month" aria-label="Next month">›</button>
+                </div>
+              </div>
+            </div>
+            <!-- 7-Column Grid -->
+            <div class="calendar-grid-box" id="calendar-grid-container">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- White EVENTS List Card Below/Beside -->
+          <div class="events-list-card">
+            <div class="events-card-header">
+              <h3 class="events-card-title">EVENTS</h3>
+            </div>
+            <div class="events-card-body" id="events-list-container">
+              <!-- Event rows rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 12: FOOTER -->
+    <footer class="site-footer" id="site-footer" aria-label="University Information and Links">
+      <div class="footer-container">
+        <!-- Top Footer Row: Campus & Regional Offices -->
+        <div class="footer-top-grid">
+          <!-- Col 1: University Identity -->
+          <div class="footer-col brand-col">
+            <div class="footer-logo-lockup">
+              <div class="footer-emblem-svg">
+                <svg viewBox="0 0 60 60" width="48" height="48">
+                  <circle cx="30" cy="30" r="28" fill="#F26437"/>
+                  <circle cx="30" cy="30" r="22" fill="#003A9B"/>
+                  <circle cx="30" cy="30" r="14" fill="#FFFFFF"/>
+                  <path d="M28 37h4v-8h-4z" fill="#003A9B"/>
+                  <circle cx="30" cy="24" r="5" fill="#F9A62F"/>
+                </svg>
+              </div>
+              <div class="footer-brand-title">
+                <strong>SRM University Delhi-NCR, Sonepat, Haryana</strong>
+              </div>
+            </div>
+            <div class="footer-contact-block">
+              <p><strong>MAIN CAMPUS:</strong> 39, Rajiv Gandhi Education City, Delhi-NCR, Sonepat-131029, Haryana (India)</p>
+              <p><strong>REGIONAL OFFICE (DELHI):</strong> 1st Floor, Pocket D12, Sector 8, next to Rohini East Metro Station, Delhi-110085</p>
+              <p><strong>REGIONAL OFFICE (LUCKNOW):</strong> 704, ELDECO Corporate Tower, Vibhuti Khand, Gomti Nagar, Lucknow (Opposite Indira Gandhi Pratishthan)</p>
+              <p><strong>REGIONAL OFFICE (PATNA):</strong> 602, 6th Floor, Kanak Braj Complex, Nageshwar Colony, Boring Road, Patna</p>
+              <p><strong>REGIONAL OFFICE (KOLKATA):</strong> Floor, Circular Mansion, 222 AJC Bose Road Kolkata – 700017</p>
+              <p><strong>Admission Helplines:</strong> +91-8816033301 / 02 / 03 / 04 / 05 / 06 and 8816033306 (Whatsapp)</p>
+              <p><a href="#demo-flyer" class="footer-download-link">📄 Download: University Information Flyer 2026-27</a></p>
+            </div>
+            <!-- Social links -->
+            <div class="footer-social-links">
+              <span class="social-label">Follow Us:</span>
+              <div class="social-icons-row">
+                <a href="#demo-fb" class="social-circle" aria-label="Facebook"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+                <a href="#demo-x" class="social-circle" aria-label="X"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                <a href="#demo-in" class="social-circle" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+                <a href="#demo-yt" class="social-circle" aria-label="YouTube"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43zM9.75 15.02V8.5l5.75 3.26-5.75 3.26z"/></svg></a>
+                <a href="#demo-ig" class="social-circle" aria-label="Instagram"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg></a>
+              </div>
+            </div>
+            <div class="footer-site-meta">
+              <p><strong>Last Updated On:</strong> <span id="footer-last-updated">13 October 2026</span></p>
+              <p><strong>You Are:</strong> <span class="visitor-counter-box">16522248</span> Visitor</p>
+            </div>
+          </div>
+
+          <!-- Col 2: Important Links -->
+          <div class="footer-col links-col">
+            <h3 class="footer-section-title">Important Links</h3>
+            <ul class="footer-links-list" id="footer-important-links-list">
+              <!-- Rendered dynamically -->
+            </ul>
+          </div>
+
+          <!-- Col 3: Portals & Samadhaan -->
+          <div class="footer-col portals-col">
+            <h3 class="footer-section-title">Portal</h3>
+            <ul class="portal-links-list">
+              <li><a href="#demo-student">Student Portal</a></li>
+              <li><a href="#demo-parent">Parent Portal</a></li>
+              <li><a href="#demo-alumni">Alumni Portal</a></li>
+              <li><a href="#demo-erp">University ERP</a></li>
+            </ul>
+            <div class="samadhaan-card">
+              <div class="samadhaan-badge">SAMADHAAN</div>
+              <p class="samadhaan-desc">Online Student Grievance Redressal Portal</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom-bar">
+          <div class="footer-copyright">
+            Copyright © 2026 SRM University Delhi-NCR, Sonepat. All rights reserved. | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms & Conditions</a>
+          </div>
+          <div class="footer-disclaimer">
+            Demo website for project purposes only.
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- FIXED BOTTOM NEWS & NOTICES TICKER -->
+  <aside class="fixed-news-ticker" id="fixed-news-ticker" aria-label="Latest University News and Notices">
+    <div class="ticker-label-box">
+      <span class="ticker-pulse-dot"></span>
+      <span class="ticker-title">News and Notices</span>
+    </div>
+    <div class="ticker-marquee-wrapper" id="ticker-marquee-wrapper">
+      <div class="ticker-marquee-track" id="ticker-marquee-track">
+        <!-- Rendered from tickerNotices in data.js -->
+      </div>
+    </div>
+  </aside>
+
+  <!-- BACK TO TOP BUTTON -->
+  <button type="button" class="back-to-top-btn" id="back-to-top-btn" aria-label="Scroll back to top">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- ENTRYPOINT SCRIPT -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
