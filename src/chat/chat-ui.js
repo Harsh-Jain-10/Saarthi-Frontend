@@ -1,5 +1,6 @@
 import { CHAT_CONFIG } from './chat-config.js';
 import { sendMessage } from './chat-service.js';
+import { VoiceService } from './voice-service.js';
 
 export function initChat() {
   const isEnabled = Boolean(
@@ -58,7 +59,7 @@ export function initChat() {
           </div>
           <div>
             <h2 id="srmuh-chat-title" class="srmuh-chat-title">${CHAT_CONFIG.BOT_NAME}</h2>
-            <span class="srmuh-chat-status">${isEnabled ? '● Online (Instant Reply)' : '○ Standby Mode'}</span>
+            <span class="srmuh-chat-status">${isEnabled ? '● Online (Voice & Text)' : '○ Standby Mode'}</span>
           </div>
         </div>
         <button type="button" class="srmuh-chat-close-btn" id="srmuh-chat-close" aria-label="Close chat window">
@@ -75,6 +76,15 @@ export function initChat() {
         </div>
       </div>
 
+      <!-- Real-time Voice Status Bar -->
+      <div class="srmuh-voice-bar" id="srmuh-voice-bar" hidden>
+        <div class="srmuh-voice-indicator">
+          <span class="srmuh-voice-dot"></span>
+          <span class="srmuh-voice-status-text" id="srmuh-voice-status-text">Listening...</span>
+        </div>
+        <button type="button" class="srmuh-voice-cancel-btn" id="srmuh-voice-cancel" aria-label="Cancel voice mode" title="Cancel voice">✕</button>
+      </div>
+
       <form class="srmuh-chat-footer" id="srmuh-chat-form">
         <input 
           type="text" 
@@ -85,6 +95,22 @@ export function initChat() {
           autocomplete="off"
           aria-label="Your query"
         />
+        <!-- Microphone Button for Browser Voice Chat -->
+        <button 
+          type="button" 
+          id="srmuh-chat-mic" 
+          class="srmuh-chat-mic-btn" 
+          ${isEnabled ? '' : 'disabled'}
+          aria-label="Voice conversation"
+          title="Click to speak (Real-time voice chat)"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
         <button 
           type="submit" 
           id="srmuh-chat-send" 
@@ -110,6 +136,129 @@ export function initChat() {
   const chatForm = document.getElementById('srmuh-chat-form');
   const chatInput = document.getElementById('srmuh-chat-input');
   const sendBtn = document.getElementById('srmuh-chat-send');
+  const micBtn = document.getElementById('srmuh-chat-mic');
+  const voiceBar = document.getElementById('srmuh-voice-bar');
+  const voiceStatusText = document.getElementById('srmuh-voice-status-text');
+  const voiceCancelBtn = document.getElementById('srmuh-voice-cancel');
+
+  // Track active message bubble elements during voice stream
+  let interimUserBubble = null;
+  let activeAssistantBubble = null;
+  let typingIndicator = null;
+
+  function showTypingIndicator() {
+    if (!typingIndicator) {
+      typingIndicator = document.createElement('div');
+      typingIndicator.className = 'srmuh-message-bubble assistant typing';
+      typingIndicator.innerHTML = `
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      `;
+      chatBody.appendChild(typingIndicator);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  }
+
+  function removeTypingIndicator() {
+    if (typingIndicator) {
+      typingIndicator.remove();
+      typingIndicator = null;
+    }
+  }
+
+  // Initialize Real-time Voice Service
+  const voiceService = new VoiceService({
+    onStatusChange: (status) => {
+      micBtn.classList.remove('is-recording', 'is-speaking', 'is-thinking');
+
+      if (status === 'listening') {
+        voiceBar.hidden = false;
+        voiceStatusText.textContent = 'Listening... Speak now';
+        micBtn.classList.add('is-recording');
+        micBtn.title = 'Listening to you (Click to stop)';
+      } else if (status === 'transcribing') {
+        voiceBar.hidden = false;
+        voiceStatusText.textContent = 'Transcribing your speech...';
+        micBtn.classList.add('is-recording');
+      } else if (status === 'thinking') {
+        voiceBar.hidden = false;
+        voiceStatusText.textContent = 'Saarthi is thinking...';
+        micBtn.classList.add('is-thinking');
+        showTypingIndicator();
+      } else if (status === 'speaking') {
+        voiceBar.hidden = false;
+        voiceStatusText.textContent = 'Saarthi is speaking... (Click mic to interrupt)';
+        micBtn.classList.add('is-speaking');
+        micBtn.title = 'Saarthi is speaking (Click or speak to interrupt)';
+        removeTypingIndicator();
+      } else {
+        // Idle
+        voiceBar.hidden = true;
+        micBtn.title = 'Click to speak with Saarthi';
+        removeTypingIndicator();
+        activeAssistantBubble = null;
+      }
+    },
+
+    onTranscript: (text, isFinal) => {
+      if (!text) return;
+
+      if (!interimUserBubble) {
+        interimUserBubble = document.createElement('div');
+        interimUserBubble.className = 'srmuh-message-bubble user is-interim';
+        chatBody.appendChild(interimUserBubble);
+      }
+
+      interimUserBubble.textContent = text;
+      chatBody.scrollTop = chatBody.scrollHeight;
+
+      if (isFinal) {
+        interimUserBubble.classList.remove('is-interim');
+        interimUserBubble = null;
+      }
+    },
+
+    onAnswerChunk: (delta) => {
+      removeTypingIndicator();
+      if (!activeAssistantBubble) {
+        activeAssistantBubble = document.createElement('div');
+        activeAssistantBubble.className = 'srmuh-message-bubble assistant';
+        chatBody.appendChild(activeAssistantBubble);
+      }
+      activeAssistantBubble.textContent += delta;
+      chatBody.scrollTop = chatBody.scrollHeight;
+    },
+
+    onAnswer: (fullText) => {
+      removeTypingIndicator();
+      if (!activeAssistantBubble) {
+        activeAssistantBubble = document.createElement('div');
+        activeAssistantBubble.className = 'srmuh-message-bubble assistant';
+        chatBody.appendChild(activeAssistantBubble);
+      }
+      activeAssistantBubble.textContent = fullText;
+      chatBody.scrollTop = chatBody.scrollHeight;
+    },
+
+    onInterrupted: () => {
+      if (activeAssistantBubble && !activeAssistantBubble.textContent.includes(' [Interrupted]')) {
+        activeAssistantBubble.textContent += ' [Interrupted]';
+      }
+      removeTypingIndicator();
+      voiceStatusText.textContent = 'Interrupted. Listening...';
+    },
+
+    onError: (errorMessage) => {
+      removeTypingIndicator();
+      const errBubble = document.createElement('div');
+      errBubble.className = 'srmuh-message-bubble assistant error';
+      errBubble.textContent = errorMessage;
+      chatBody.appendChild(errBubble);
+      chatBody.scrollTop = chatBody.scrollHeight;
+      voiceBar.hidden = true;
+    },
+  });
 
   function openChat() {
     dialog.hidden = false;
@@ -123,6 +272,10 @@ export function initChat() {
   }
 
   function closeChat() {
+    // If voice session is active when dialog is closed, clean up
+    voiceService.cleanupAudio();
+    voiceBar.hidden = true;
+
     dialog.classList.remove('is-open');
     launcher.setAttribute('aria-expanded', 'false');
     setTimeout(() => {
@@ -148,6 +301,31 @@ export function initChat() {
 
   closeBtn.addEventListener('click', closeChat);
 
+  // Microphone button click handler
+  if (isEnabled && micBtn) {
+    micBtn.addEventListener('click', async () => {
+      if (voiceService.status === 'listening') {
+        // Stop listening manually
+        voiceService.stopListening();
+      } else if (voiceService.status === 'speaking' || voiceService.status === 'thinking') {
+        // Instant Barge-In
+        voiceService.interrupt();
+        // Immediately start listening again for next user utterance
+        await voiceService.startListening();
+      } else {
+        // Start listening
+        await voiceService.startListening();
+      }
+    });
+
+    if (voiceCancelBtn) {
+      voiceCancelBtn.addEventListener('click', () => {
+        voiceService.cleanupAudio();
+        voiceBar.hidden = true;
+      });
+    }
+  }
+
   // Esc key closes panel
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !dialog.hidden) {
@@ -172,12 +350,15 @@ export function initChat() {
     }
   });
 
-  // Active chat submission handler
+  // Active chat submission handler (text chat)
   if (isEnabled) {
     chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const query = chatInput.value.trim();
       if (!query) return;
+
+      // Stop any active voice playback or listening before submitting text
+      voiceService.cleanupAudio();
 
       // Add user message bubble
       const userBubble = document.createElement('div');
@@ -188,15 +369,7 @@ export function initChat() {
       chatBody.scrollTop = chatBody.scrollHeight;
 
       // Add typing indicator
-      const typingIndicator = document.createElement('div');
-      typingIndicator.className = 'srmuh-message-bubble assistant typing';
-      typingIndicator.innerHTML = `
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      `;
-      chatBody.appendChild(typingIndicator);
-      chatBody.scrollTop = chatBody.scrollHeight;
+      showTypingIndicator();
 
       // Disable inputs while processing
       chatInput.disabled = true;
@@ -204,14 +377,14 @@ export function initChat() {
 
       try {
         const response = await sendMessage(query, sessionId);
-        typingIndicator.remove();
+        removeTypingIndicator();
 
         const assistantBubble = document.createElement('div');
         assistantBubble.className = 'srmuh-message-bubble assistant';
         assistantBubble.textContent = response.answer;
         chatBody.appendChild(assistantBubble);
       } catch (err) {
-        typingIndicator.remove();
+        removeTypingIndicator();
         const errBubble = document.createElement('div');
         errBubble.className = 'srmuh-message-bubble assistant error';
         errBubble.textContent = "Something went wrong while connecting. Please try again.";

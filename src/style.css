@@ -1030,6 +1030,54 @@ button {
   color: #94A3B8;
 }
 
+.srmuh-message-bubble.user.is-interim {
+  background-color: rgba(0, 58, 155, 0.78);
+  font-style: italic;
+  border: 1px dashed rgba(255, 255, 255, 0.6);
+}
+
+.srmuh-voice-bar {
+  padding: 8px 14px;
+  background: linear-gradient(90deg, #EFF6FF 0%, #FFF7ED 100%);
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: var(--color-blue-primary);
+}
+
+.srmuh-voice-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.srmuh-voice-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-orange);
+  animation: voiceDotPulse 1.2s infinite ease-in-out;
+}
+
+.srmuh-voice-cancel-btn {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.srmuh-voice-cancel-btn:hover {
+  color: #0F172A;
+  background-color: #E2E8F0;
+}
+
 .srmuh-chat-send-btn {
   width: 38px;
   height: 38px;
@@ -1040,6 +1088,9 @@ button {
   align-items: center;
   justify-content: center;
   transition: background-color var(--transition-fast);
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .srmuh-chat-send-btn:hover:not(:disabled) {
@@ -1049,6 +1100,89 @@ button {
 .srmuh-chat-send-btn:disabled {
   background-color: #CBD5E1;
   cursor: not-allowed;
+}
+
+.srmuh-chat-mic-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #F1F5F9;
+  color: var(--color-blue-primary);
+  border: 1px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.srmuh-chat-mic-btn:hover:not(:disabled) {
+  background-color: var(--color-blue-primary);
+  color: #FFFFFF;
+  border-color: var(--color-blue-primary);
+}
+
+.srmuh-chat-mic-btn:disabled {
+  background-color: #CBD5E1;
+  cursor: not-allowed;
+  color: #94A3B8;
+}
+
+.srmuh-chat-mic-btn.is-recording {
+  background-color: var(--color-orange);
+  color: #FFFFFF;
+  border-color: var(--color-orange);
+  animation: micRecordingPulse 1.4s infinite;
+}
+
+.srmuh-chat-mic-btn.is-speaking {
+  background-color: var(--color-amber);
+  color: #FFFFFF;
+  border-color: var(--color-amber);
+  animation: micSpeakingPulse 1.6s infinite;
+}
+
+.srmuh-chat-mic-btn.is-thinking {
+  background-color: var(--color-blue-primary);
+  color: #FFFFFF;
+  border-color: var(--color-blue-primary);
+  opacity: 0.8;
+}
+
+@keyframes micRecordingPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(242, 100, 55, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(242, 100, 55, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(242, 100, 55, 0);
+  }
+}
+
+@keyframes micSpeakingPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(249, 166, 47, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(249, 166, 47, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 166, 47, 0);
+  }
+}
+
+@keyframes voiceDotPulse {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
 }
 
 /* ==========================================================================

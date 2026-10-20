@@ -10,6 +10,9 @@ export const CHAT_CONFIG = {
   // Backend API URL — set via VITE_CHAT_API_URL in .env
   CHAT_API_URL: runtimeConfig.CHAT_API_URL ?? (import.meta.env?.VITE_CHAT_API_URL || "http://localhost:8000/api/chat"),
 
+  // Backend Voice WebSocket URL
+  VOICE_WS_URL: runtimeConfig.VOICE_WS_URL ?? (import.meta.env?.VITE_VOICE_WS_URL || "ws://localhost:8000/api/voice"),
+
   BOT_NAME: runtimeConfig.BOT_NAME || "Saarthi AI",
 
   DISABLED_GREETING: "Hi! I'm coming soon. Chat support will be available shortly.",
@@ -18,3 +21,4 @@ export const CHAT_CONFIG = {
   DISABLED_PLACEHOLDER: "Chat will be available soon",
   ENABLED_PLACEHOLDER: "Ask me about admissions, fees, courses..."
 };
+
