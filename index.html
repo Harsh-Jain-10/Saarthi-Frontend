@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>SRM University Delhi-NCR, Sonepat | Haryana | Admissions 2026-27</title>
-  <meta name="description" content="Official homepage clone of SRM University Delhi-NCR, Sonepat (Haryana). NAAC A+ accredited top-ranked multidisciplinary private university offering Engineering, Law, Management, Science, and Humanities." />
+  <title>SRM University Delhi-NCR, Sonepat | Admissions 2027-28</title>
+  <meta name="description" content="Demo recreation of SRM University Delhi-NCR, Sonepat — programmes, faculties, campus life, placements, events and admissions." />
 
   <!-- Google Fonts: Cinzel (for SRM), Open Sans, Roboto, Playfair Display -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,6 +146,15 @@
           </div>
         </a>
 
+        <nav class="desktop-primary-nav" aria-label="Main navigation">
+          <a href="#page/about" data-route="about">About SRMUH</a>
+          <a href="#page/programmes" data-route="programmes">Academics</a>
+          <a href="#page/admissions" data-route="admissions">Admissions</a>
+          <a href="#page/research" data-route="research">Research</a>
+          <a href="#page/student-life" data-route="student-life">Student Life</a>
+          <a href="#page/contact" data-route="contact">Contact</a>
+        </nav>
+
         <!-- Middle Badges: NAAC A+ 3D Gold and Celebrating 50 Years -->
         <div class="header-badges">
           <!-- 3D Gold NAAC A+ Badge -->
@@ -204,19 +213,20 @@
     </div>
     <nav class="drawer-nav">
       <ul class="drawer-menu-list">
-        <li><a href="#hero" class="drawer-nav-link" data-target="hero">About</a></li>
-        <li><a href="#search-programmes" class="drawer-nav-link" data-target="search-programmes">Admissions 2026-27</a></li>
-        <li><a href="#study-departments" class="drawer-nav-link" data-target="study-departments">Academics & Departments</a></li>
-        <li><a href="#academic-excellence" class="drawer-nav-link" data-target="academic-excellence">Faculties</a></li>
-        <li><a href="#research-stats" class="drawer-nav-link" data-target="research-stats">Research & Innovation</a></li>
-        <li><a href="#placements" class="drawer-nav-link" data-target="placements">Placements</a></li>
-        <li><a href="#spotlight" class="drawer-nav-link" data-target="spotlight">Campus Life & Spotlight</a></li>
+        <li><a href="#page/about" class="drawer-nav-link" data-page="about">About</a></li>
+        <li><a href="#page/admissions" class="drawer-nav-link" data-page="admissions">Admissions 2027-28</a></li>
+        <li><a href="#page/fees" class="drawer-nav-link" data-page="fees">Fees & Scholarships</a></li>
+        <li><a href="#page/programmes" class="drawer-nav-link" data-page="programmes">Academics & Programmes</a></li>
+        <li><a href="#page/placements" class="drawer-nav-link" data-page="placements">Placements</a></li>
+        <li><a href="#page/faculty-engineering" class="drawer-nav-link" data-page="faculty-engineering">Faculties</a></li>
+        <li><a href="#page/research" class="drawer-nav-link" data-page="research">Research & Innovation</a></li>
+        <li><a href="#page/student-life" class="drawer-nav-link" data-page="student-life">Campus Life</a></li>
         <li><a href="#testimonials" class="drawer-nav-link" data-target="testimonials">Alumni & Testimonials</a></li>
-        <li><a href="#events-calendar" class="drawer-nav-link" data-target="events-calendar">Events Calendar</a></li>
-        <li><a href="#site-footer" class="drawer-nav-link" data-target="site-footer">Contact Us</a></li>
+        <li><a href="#page/news" class="drawer-nav-link" data-page="news">News & Events</a></li>
+        <li><a href="#page/contact" class="drawer-nav-link" data-page="contact">Contact Us</a></li>
       </ul>
       <div class="drawer-cta-wrapper">
-        <a href="#search-programmes" class="drawer-apply-btn" id="drawer-apply-action">Apply Online Now →</a>
+        <a href="#page/admissions" class="drawer-apply-btn" id="drawer-apply-action">Apply Online Now →</a>
       </div>
     </nav>
   </aside>
@@ -230,8 +240,8 @@
         <path d="M12 8c-3.5 0-6 1.8-6 4v1h3v7h6v-7h3v-1c0-2.2-2.5-4-6-4z"/>
       </svg>
     </button>
-    <a href="#demo-convocation" class="left-tab-convocation" id="convocation-tab" aria-label="SRMUH Third Convocation 2025" title="SRMUH Third Convocation 2025">
-      <span>SRMUH Third Convocation 2025</span>
+    <a href="#demo-convocation" class="left-tab-convocation" id="convocation-tab" aria-label="SRMUH Fourth Convocation" title="SRMUH Fourth Convocation">
+      <span>SRMUH Fourth Convocation</span>
     </a>
   </aside>
 
@@ -239,21 +249,21 @@
   <main id="main-content" class="site-main">
 
     <!-- SECTION 1: HERO -->
-    <section class="section-hero" id="hero" aria-label="Admissions 2026-27 Hero Banner">
+    <section class="section-hero" id="hero" aria-label="Admissions 2027-28 Hero Banner">
       <div class="hero-bg-media">
-        <!-- Visual canvas with animated tech-particles + gradient poster -->
+        <!-- Official campus image with subtle motion layer -->
         <canvas id="hero-particles-canvas" class="hero-canvas"></canvas>
         <div class="hero-overlay"></div>
       </div>
       <div class="hero-content">
-        <div class="hero-tag">ADMISSIONS OPEN FOR 2026-27</div>
-        <h1 class="hero-title">Accepting Applications</h1>
-        <h2 class="hero-subtitle">Admissions 2026-27</h2>
+        <div class="hero-tag">SRM UNIVERSITY DELHI-NCR, SONEPAT</div>
+        <h1 class="hero-title">50+ Career Programmes</h1>
+        <h2 class="hero-subtitle">Admissions Open 2027-28</h2>
         <p class="hero-description">
-          A Place for Learning, Discovery, Innovation, Expression and Research.
+          Intellectually diverse learning, industry-aligned curriculum and advanced pedagogy.
         </p>
         <div class="hero-actions">
-          <a href="#search-programmes" class="btn-amber-apply" id="hero-apply-btn">Apply Now →</a>
+          <a href="#search-programmes" class="btn-amber-apply" id="hero-apply-btn">Explore Programmes →</a>
           <a href="#academic-excellence" class="btn-outline-explore" id="hero-explore-btn">Explore Faculties</a>
         </div>
       </div>
@@ -541,6 +551,8 @@
     </footer>
 
   </main>
+
+  <div id="interior-page-root" class="site-main interior-root" hidden></div>
 
   <!-- FIXED BOTTOM NEWS & NOTICES TICKER -->
   <aside class="fixed-news-ticker" id="fixed-news-ticker" aria-label="Latest University News and Notices">

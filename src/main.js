@@ -15,6 +15,49 @@ import {
 
 // Chat Module Initialization (isolated feature)
 import { initChat } from './chat/chat-ui.js';
+import { renderInteriorPage } from './pages.js';
+
+function navigateInteriorPage(route) {
+  const nextHash = `#page/${route}`;
+  if (window.location.hash === nextHash) {
+    renderActiveInteriorPage();
+  } else {
+    window.location.hash = nextHash;
+  }
+}
+
+function renderActiveInteriorPage() {
+  const host = document.getElementById('interior-page-root');
+  const homepage = document.getElementById('main-content');
+  const routeMatch = window.location.hash.match(/^#page\/([a-z0-9-]+)/i);
+  const route = routeMatch?.[1];
+
+  homepage.hidden = Boolean(route);
+  host.hidden = !route;
+  if (route) {
+    host.innerHTML = renderInteriorPage(route);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+}
+
+function initInteriorPages() {
+  window.addEventListener('hashchange', renderActiveInteriorPage);
+  document.addEventListener('click', (event) => {
+    if (event.defaultPrevented) return;
+    const routeLink = event.target.closest('[data-route]');
+    if (routeLink) {
+      event.preventDefault();
+      navigateInteriorPage(routeLink.dataset.route);
+      return;
+    }
+
+    if (event.target.closest('[data-home]')) {
+      event.preventDefault();
+      window.location.hash = '#hero';
+    }
+  });
+  renderActiveInteriorPage();
+}
 
 /* ==========================================================================
    TOAST HELPER
@@ -73,6 +116,10 @@ function initNavigation() {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       closeDrawer();
+      if (link.dataset.page) {
+        navigateInteriorPage(link.dataset.page);
+        return;
+      }
       const targetId = link.getAttribute('data-target');
       const targetElement = document.getElementById(targetId);
       if (targetElement) {
@@ -85,11 +132,7 @@ function initNavigation() {
     drawerApplyBtn.addEventListener('click', (e) => {
       e.preventDefault();
       closeDrawer();
-      const target = document.getElementById('search-programmes');
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-      showToast("Redirecting to Admissions Application Form");
+      navigateInteriorPage('admissions');
     });
   }
 
@@ -132,7 +175,7 @@ function initNavigation() {
   if (convocationTab) {
     convocationTab.addEventListener('click', (e) => {
       e.preventDefault();
-      showToast("SRMUH Third Convocation 2025: Official Notice and Live Stream");
+      showToast("SRMUH Fourth Convocation: Official Notice and Live Stream");
     });
   }
 }
@@ -659,7 +702,7 @@ function initFooterAndTicker() {
       if (target) {
         target.scrollIntoView({ behavior: 'smooth' });
       }
-      showToast("Online Admissions Application 2026-27");
+      showToast("Online admissions information for 2027-28");
     });
   }
 
@@ -676,6 +719,7 @@ function initFooterAndTicker() {
    BOOTSTRAP APPLICATION
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
+  initInteriorPages();
   initNavigation();
   initHeroParticles();
   renderAccreditations();

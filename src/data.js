@@ -2,35 +2,38 @@
 // All sections render dynamically from this data
 
 export const tickerNotices = [
-  "Tentative awardees of Hon'ble Chancellor's Medal",
-  "Official Notification for 4th Convocation",
-  "Advertisement for the Post of Project Fellow in a Haryana State Research funded research project",
-  "MST - I Schedule :: Faculty of Law - Students can contact their respective department"
+  "MST - II Schedule :: Faculty of Humanities",
+  "MST - II Schedule :: Faculty of Sciences",
+  "MST - II Schedule :: Faculty of Management & Commerce",
+  "MST - II Schedule :: Faculty of Law",
+  "MST - II Schedule :: Faculty of Engineering and Technology",
+  "Hon'ble Chancellor's Medal Notification for 4th Convocation",
+  "Project Fellow vacancy — Haryana State Research Fund"
 ];
 
 export const accreditationCards = [
   {
-    badge: "A+",
-    title: "NAAC ACCREDITED",
-    desc: "Grade 'A+' accredited with outstanding CGPA score by NAAC (Govt of India)",
+    badge: "01",
+    title: "INTELLECTUALLY DIVERSE",
+    desc: "A community of learners with different perspectives and ambitions",
     theme: "blue"
   },
   {
-    badge: "UGC",
-    title: "UGC RECOGNIZED",
-    desc: "Recognized by University Grants Commission under section 2(f) of 1956 Act",
+    badge: "50+",
+    title: "CAREER PROGRAMMES",
+    desc: "Explore career-focused programmes across disciplines",
     theme: "white"
   },
   {
-    badge: "AIU",
-    title: "AIU MEMBER",
-    desc: "Proud Member of Association of Indian Universities & International Alliances",
+    badge: "02",
+    title: "INDUSTRY-ALIGNED CURRICULUM",
+    desc: "Learn with current ideas, practical work and industry context",
     theme: "orange"
   },
   {
-    badge: "NIRF",
-    title: "EXCELLENCE RANKINGS",
-    desc: "Top ranked multidisciplinary university in Delhi-NCR region for research",
+    badge: "03",
+    title: "ADVANCED PEDAGOGY",
+    desc: "An engaging approach to teaching, learning and discovery",
     theme: "red"
   }
 ];
@@ -39,7 +42,8 @@ export const degreeOptions = [
   "Undergraduate (B.Tech, BBA, B.Com, Law, B.Sc)",
   "Postgraduate (M.Tech, MBA, M.Com, LL.M, M.Sc)",
   "Doctoral Programmes (Ph.D)",
-  "Diploma & Professional Certificates"
+  "UG/PG Integrated Programmes",
+  "Ph.D. Programmes"
 ];
 
 export const interestOptions = [
@@ -50,10 +54,18 @@ export const interestOptions = [
   "Hotel Management & Hospitality",
   "Science & Humanities",
   "Agricultural Sciences & Agribusiness",
-  "Biotechnology & Life Sciences"
+  "Biotechnology & Life Sciences",
+  "Computer Science",
+  "Biomedical Engineering",
+  "Agriculture"
 ];
 
 export const departments = [
+  {
+    name: "Department of Biomedical Engineering",
+    code: "BIO-MED",
+    icon: `<svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="1.8" fill="none"><path d="M3 12h4l2-6 4 12 2-6h6"/><circle cx="12" cy="12" r="10"/></svg>`
+  },
   {
     name: "Department of Computer Science & Engineering (CSE)",
     code: "CSE",
@@ -144,6 +156,21 @@ export const departments = [
     code: "MATH",
     icon: `<svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="1.8" fill="none"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>`
   }
+  ,{
+    name: "Microbiology",
+    code: "MICRO",
+    icon: `<svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="1.8" fill="none"><circle cx="12" cy="12" r="7"/><path d="M12 5V2M12 22v-3M5 12H2m20 0h-3M7 7 5 5m14 14-2-2m0-10 2-2M5 19l2-2"/><circle cx="10" cy="10" r="1"/><circle cx="14" cy="13" r="1"/></svg>`
+  },
+  {
+    name: "Physics",
+    code: "PHYS",
+    icon: `<svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="1.8" fill="none"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>`
+  },
+  {
+    name: "Physical Education & Sports",
+    code: "SPORTS",
+    icon: `<svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="1.8" fill="none"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2c3 3 3 17 0 20M12 2c-3 3-3 17 0 20"/></svg>`
+  }
 ];
 
 export const faculties = [
@@ -195,43 +222,35 @@ export const faculties = [
     bgGradient: "linear-gradient(135deg, #114357 0%, #f29492 100%)",
     icon: "science"
   },
-  {
-    name: "FACULTY OF AGRICULTURE",
-    overlayType: "dark",
-    desc: "The Faculty of Agriculture focuses on agronomy, organic techniques, smart…",
-    fullDesc: "The Faculty of Agriculture focuses on agronomy, organic techniques, smart precision farming, and sustainable agricultural sciences across acres of demo farms.",
-    bgGradient: "linear-gradient(135deg, #134e5e 0%, #71b280 100%)",
-    icon: "agriculture"
-  }
 ];
 
 export const spotlightSlides = [
   {
-    title: "TWO-DAY INDUSTRIAL VISIT TO NPTI, NANGAL, PUNJAB",
-    summary: "Students gained first-hand insights into hydro-electric turbines and grid management systems.",
-    tag: "INDUSTRIAL EXPOSURE",
-    date: "Sep 2026",
+    title: "B.COM WITH ACCA ORIENTATION",
+    summary: "Students explored professional accounting pathways and global career opportunities.",
+    tag: "ACADEMICS",
+    date: "Oct 2026",
     gradient: "linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%)"
   },
   {
-    title: "NATIONAL CONFERENCE ON INNOVATION & SUSTAINABILITY",
-    summary: "Eminent scientists and industry titans congregated for groundbreaking research discussions.",
-    tag: "RESEARCH CONCLAVE",
-    date: "Aug 2026",
+    title: "TOWARDS TB ELIMINATION 2035",
+    summary: "A lecture on the roadmap and strategies to combat MDR and XDR tuberculosis.",
+    tag: "PUBLIC HEALTH LECTURE",
+    date: "Oct 2026",
     gradient: "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)"
   },
   {
-    title: "GLOBAL ALUMNI MEET 2026",
-    summary: "Distinguished alumni across 40+ countries reconnect and mentor graduating batches.",
-    tag: "CAMPUS EVENT",
-    date: "Jul 2026",
+    title: "ANTIMICROBIAL RESISTANCE: THE SILENT PANDEMIC",
+    summary: "Research perspectives on multidrug-resistant Gram-negative pathogens.",
+    tag: "SCIENCE LECTURE",
+    date: "Oct 2026",
     gradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)"
   },
   {
-    title: "CAMPUS HACKATHON & ROBOTICS EXPO",
-    summary: "Over 200 student teams demonstrated AI prototypes and automated robotics solutions.",
-    tag: "INNOVATION HUB",
-    date: "Jun 2026",
+    title: "HACKPRIX 2026",
+    summary: "Student innovation and problem-solving at the university’s annual hackathon.",
+    tag: "STUDENT INNOVATION",
+    date: "Sep 2026",
     gradient: "linear-gradient(135deg, #f857a6 0%, #ff5858 100%)"
   }
 ];
@@ -245,23 +264,23 @@ export const stats = [
     sub: "International Placement"
   },
   {
-    value: 1400,
+    value: 925,
     unit: "+",
-    label: "Paid Internship",
+    label: "Companies Visited",
     prefix: "",
     sub: "Across Top Corporates"
   },
   {
-    value: 350,
+    value: 2024,
     unit: "+",
-    label: "Top Recruiters",
+    label: "Jobs Placement",
     prefix: "",
     sub: "Fortune 500 & Startups"
   },
   {
-    value: 95,
-    unit: "%",
-    label: "Placement Record",
+    value: 1400,
+    unit: "+",
+    label: "Paid Internship",
     prefix: "",
     sub: "Consistent Track Record"
   }
@@ -297,29 +316,47 @@ export const testimonials = [
     avatarInitials: "AM"
   },
   {
-    quote: "The dynamic curriculum and industry-oriented faculty at SRMUH helped me crack multi-national placement offers. The research culture and international guest lectures set our foundation for corporate leadership in fintech analytics.",
-    author: "Priya Sharma",
-    role: "Alumna, MBA - Business Analytics",
+    quote: "It was my immense luck and fortune to be a part of an institute like SRM University. The entire faculty and department leave no stone unturned to shape one's future. My four years at SRMUH have been a wonderful experience of learning with prolific exposure to the outside world along with making some beautiful bonds for lifetime.",
+    author: "R Vinupriya",
+    role: "Alumna, B.Tech. Biomedical Engineering",
     avatarBg: "#F26437",
     avatarInitials: "PS"
   },
   {
-    quote: "The coding clubs, high-tech research labs, and dedicated hackathons transformed my technical journey. Mentorship from senior professors guided me to publish two international patents before graduation.",
-    author: "Rohan Verma",
-    role: "Alumnus, B.Tech. - Computer Science & Engg",
+    quote: "My overall experience has been beneficial because of my professors who approached teaching with a more conscious effort and taught me to approach learning in the same way. SRMUH has helped me academically and in grooming my overall personality.",
+    author: "Sujata",
+    role: "Student, M.Sc. Microbiology",
     avatarBg: "#00796B",
     avatarInitials: "RV"
   },
   {
-    quote: "From courtroom moot courts to national legal aid camps, the Faculty of Law gave me the practical competence and advocacy confidence required to excel at top tier corporate law firms and bar councils.",
-    author: "Ananya Sengupta",
-    role: "Alumna, B.A. LL.B. (Hons)",
+    quote: "SRMUH is a dream for every aspirant who wants to touch heights in their career. The dynamic management and continuous support from faculties helped me a lot. It is my privilege to be part of the SRM Family.",
+    author: "Dhruv Garg",
+    role: "Student, LL.B. (Hons.)",
     avatarBg: "#6A1B9A",
     avatarInitials: "AS"
   }
 ];
 
 export const calendarEvents = [
+  {
+    day: "16",
+    month: "OCT",
+    title: "B.Com with ACCA orientation",
+    category: "Academic Event"
+  },
+  {
+    day: "02",
+    month: "OCT",
+    title: "Lecture: Roadmap and strategies to combat MDR and XDR Tuberculosis",
+    category: "Public Health Lecture"
+  },
+  {
+    day: "01",
+    month: "OCT",
+    title: "Antimicrobial Resistance (AMR): The Silent Pandemic",
+    category: "Science Lecture"
+  },
   {
     day: "30",
     month: "SEP",
@@ -339,10 +376,10 @@ export const calendarEvents = [
     category: "Technical Workshop"
   },
   {
-    day: "22",
+    day: "26",
     month: "SEP",
-    title: "International Microorganism Day",
-    category: "Science Department"
+    title: "HackPrix 2026",
+    category: "Student Innovation"
   },
   {
     day: "21",
