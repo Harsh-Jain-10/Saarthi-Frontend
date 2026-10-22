@@ -343,49 +343,57 @@ export const calendarEvents = [
     day: "16",
     month: "OCT",
     title: "B.Com with ACCA orientation",
-    category: "Academic Event"
+    category: "Academic Event",
+    url: "https://www.srmuniversity.ac.in/event/b-com-with-acca-orientation"
   },
   {
     day: "02",
     month: "OCT",
     title: "Lecture: Roadmap and strategies to combat MDR and XDR Tuberculosis",
-    category: "Public Health Lecture"
+    category: "Public Health Lecture",
+    url: "https://www.srmuniversity.ac.in/event/lecture-on-in-the-path-towards-tb-elimination-2035-roadmap-and-strategies-to-combat-mdr-and-xdr-tuberculosis"
   },
   {
     day: "01",
     month: "OCT",
     title: "Antimicrobial Resistance (AMR): The Silent Pandemic",
-    category: "Science Lecture"
+    category: "Science Lecture",
+    url: "https://www.srmuniversity.ac.in/event/lecture-on-antimicrobial-resistance-amr-the-silent-pandemic-challenges-and-opportunities-to-combat-the-emergence-of-multidrug-resistant-gram-negative-pathogens"
   },
   {
     day: "30",
     month: "SEP",
     title: "Two-Day Industrial Visit to NPTI, Nangal, Punjab",
-    category: "Industrial Exposure"
+    category: "Industrial Exposure",
+    url: "https://www.srmuniversity.ac.in/event/two-day-industrial-visit-to-npti-nangal-punjab"
   },
   {
     day: "25",
     month: "SEP",
     title: "World Tourism Day 2026",
-    category: "Campus Celebration"
+    category: "Campus Celebration",
+    url: "https://www.srmuniversity.ac.in/event/world-tourism-day-2026"
   },
   {
     day: "24",
     month: "SEP",
     title: "ISO/IEC 17025:2017 & NABL Requirements",
-    category: "Technical Workshop"
+    category: "Technical Workshop",
+    url: "https://www.srmuniversity.ac.in/event/iso-iec-17025-2017-nabl-requirements"
   },
   {
     day: "26",
     month: "SEP",
     title: "HackPrix 2026",
-    category: "Student Innovation"
+    category: "Student Innovation",
+    url: "https://www.srmuniversity.ac.in/event/hackprix-2026"
   },
   {
     day: "21",
     month: "SEP",
     title: "TOEFL Mock Test (21st September, 2026) and Global…",
-    category: "Career Guidance"
+    category: "Career Guidance",
+    url: "https://www.srmuniversity.ac.in/event/toefl-mock-test-21st-september-2026-and-global-education-fair-22nd-september-2026"
   },
   {
     day: "16",

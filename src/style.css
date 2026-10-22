@@ -3014,3 +3014,63 @@ button {
   from { opacity: 1; }
   to { opacity: 0; }
 }
+
+/* Functional interior catalogue, search and accessibility controls */
+@media (min-width: 992px) and (max-width: 1279px) {
+  .desktop-primary-nav { display: none; }
+}
+
+.drawer-menu-list > li > strong {
+  display: block;
+  padding: 17px 20px 8px;
+  color: #0d397b;
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.programme-keyword-wrap .programmes-dropdown { cursor: text; }
+.programme-search-results { margin-top: 18px; padding: 18px; border: 1px solid #e2e9f3; border-radius: 12px; background: #fff; color: #1d2f4d; }
+.programme-search-results-heading { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 12px; }
+.programme-search-results-heading a { color: #0b4ea2; font-weight: 700; }
+.programme-search-result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.programme-search-result-grid > a { display: grid; gap: 7px; padding: 13px; border: 1px solid #e6ebf2; border-radius: 8px; background: #f9fbfe; }
+.programme-search-result-grid > a:hover { border-color: #f2a23b; background: #fffaf2; }
+.programme-search-result-grid strong { color: #173866; font-size: .9rem; }
+.programme-search-result-grid span { color: #63718a; font-size: .78rem; line-height: 1.5; }
+
+.catalogue-tools { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(200px, .65fr) auto; align-items: end; gap: 14px; margin: 0 0 18px; }
+.catalogue-tools label { display: grid; gap: 7px; color: #46556e; font-size: .8rem; font-weight: 700; }
+.catalogue-tools input, .catalogue-tools select { min-width: 0; min-height: 44px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 7px; background: #fff; color: #1d2f4d; font: inherit; }
+.catalogue-tools input:focus, .catalogue-tools select:focus { outline: 3px solid rgba(242, 162, 59, .25); border-color: #d88825; }
+.catalogue-count { padding: 12px 0; color: #61718a; font-size: .82rem; white-space: nowrap; }
+.catalogue-table-scroll { overflow-x: auto; border: 1px solid #e0e7f0; border-radius: 12px; background: #fff; }
+.catalogue-table { width: 100%; min-width: 770px; border-collapse: collapse; text-align: left; }
+.catalogue-table th { position: sticky; top: 0; padding: 14px 16px; background: #0b3471; color: #fff; font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; }
+.catalogue-table td { padding: 13px 16px; border-top: 1px solid #edf0f5; color: #4a5870; font-size: .83rem; line-height: 1.5; }
+.catalogue-table tbody tr:hover { background: #f8faff; }
+.catalogue-table td a:first-child { color: #123e7e; font-weight: 700; }
+.catalogue-table td small { display: block; margin-top: 3px; color: #7a8495; font-size: .72rem; }
+.catalogue-table .table-action { color: #b95c18; font-size: .76rem; font-weight: 800; white-space: nowrap; }
+.catalogue-table [data-empty-state] td { padding: 24px; text-align: center; color: #6b778a; }
+.fee-note { margin-top: 18px; padding: 17px 20px; border-left: 4px solid #eaa13b; border-radius: 0 8px 8px 0; background: #fff7e9; color: #675230; font-size: .88rem; line-height: 1.65; }
+.interior-footer a { color: #0d4f9f; font-weight: 700; text-decoration: underline; }
+.events-empty-state { padding: 20px 4px; color: #68758a; font-size: .87rem; line-height: 1.6; }
+.events-empty-state a { color: #0b4ea2; font-weight: 700; text-decoration: underline; }
+.cal-day-cell.is-selected { outline: 2px solid #ffc260; outline-offset: -3px; }
+.samadhaan-card { display: block; color: inherit; }
+.samadhaan-card:hover { background: rgba(255,255,255,.12); }
+
+.accessibility-panel { position: fixed; z-index: 1200; left: 58px; top: 45%; display: grid; gap: 8px; min-width: 190px; padding: 14px; border: 1px solid #d7dfeb; border-radius: 10px; background: #fff; color: #1c2e4b; box-shadow: 0 12px 36px rgba(0,20,55,.2); }
+.accessibility-panel button { padding: 8px 10px; border: 1px solid #dce3ee; border-radius: 6px; background: #f7f9fc; color: inherit; text-align: left; cursor: pointer; }
+.accessibility-panel button:hover { border-color: #e5a03e; background: #fff8ec; }
+body.a11y-large-text { font-size: 112%; }
+body.a11y-high-contrast { filter: contrast(1.22); }
+body.a11y-high-contrast a { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .catalogue-tools { grid-template-columns: 1fr; gap: 10px; }
+  .catalogue-count { padding: 0; }
+  .programme-search-results-heading { align-items: start; flex-direction: column; }
+  .accessibility-panel { left: 56px; top: auto; bottom: 110px; }
+}

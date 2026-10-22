@@ -16,6 +16,21 @@ import {
 // Chat Module Initialization (isolated feature)
 import { initChat } from './chat/chat-ui.js';
 import { renderInteriorPage } from './pages.js';
+import { programmeCatalogue } from './programmes.js';
+
+const facultyRoutes = {
+  engineering: 'faculty-engineering', commerce: 'faculty-commerce', hotel: 'faculty-hotel',
+  law: 'faculty-law', management: 'faculty-management', science: 'faculty-science'
+};
+function facultyRouteFromText(value = '') {
+  const name = value.toLowerCase();
+  if (name.includes('engineering')) return facultyRoutes.engineering;
+  if (name.includes('commerce') || name.includes('finance')) return facultyRoutes.commerce;
+  if (name.includes('hotel')) return facultyRoutes.hotel;
+  if (name.includes('law')) return facultyRoutes.law;
+  if (name.includes('management')) return facultyRoutes.management;
+  return facultyRoutes.science;
+}
 
 function navigateInteriorPage(route) {
   const nextHash = `#page/${route}`;
@@ -55,6 +70,27 @@ function initInteriorPages() {
       event.preventDefault();
       window.location.hash = '#hero';
     }
+  });
+  const filterCatalogue = (container) => {
+    if (!container) return;
+    const query = (container.querySelector('[data-catalogue-search]')?.value || '').trim().toLowerCase();
+    const faculty = container.querySelector('[data-catalogue-faculty]')?.value || '';
+    let visible = 0;
+    container.querySelectorAll('[data-course-row]').forEach(row => {
+      const matches = row.dataset.search.includes(query) && (!faculty || row.querySelector('td:nth-child(2)')?.textContent === faculty);
+      row.hidden = !matches;
+      visible += Number(matches);
+    });
+    const empty = container.querySelector('[data-empty-state]');
+    if (empty) empty.hidden = visible !== 0;
+    const count = container.querySelector('[data-catalogue-count]');
+    if (count) count.textContent = `${visible} programme${visible === 1 ? '' : 's'}`;
+  };
+  document.addEventListener('input', event => {
+    if (event.target.matches('[data-catalogue-search]')) filterCatalogue(event.target.closest('.interior-section'));
+  });
+  document.addEventListener('change', event => {
+    if (event.target.matches('[data-catalogue-faculty]')) filterCatalogue(event.target.closest('.interior-section'));
   });
   renderActiveInteriorPage();
 }
@@ -153,20 +189,54 @@ function initNavigation() {
   // Portal dropdown in top utility bar
   const portalBtn = document.getElementById('portal-quick-dropdown');
   if (portalBtn) {
+    portalBtn.setAttribute('aria-expanded', 'false');
+    document.addEventListener('click', event => {
+      const activeMenu = document.getElementById('quick-access-menu');
+      if (!activeMenu || activeMenu.contains(event.target) || portalBtn.contains(event.target)) return;
+      activeMenu.remove();
+      portalBtn.setAttribute('aria-expanded', 'false');
+    });
     portalBtn.addEventListener('click', () => {
-      const footerPortals = document.querySelector('.portals-col');
-      if (footerPortals) {
-        footerPortals.scrollIntoView({ behavior: 'smooth' });
+      let menu = document.getElementById('quick-access-menu');
+      if (menu) {
+        menu.remove();
+        portalBtn.setAttribute('aria-expanded', 'false');
+        return;
       }
-      showToast("Quick Access: Portals section");
+      menu = document.createElement('nav');
+      menu.id = 'quick-access-menu';
+      menu.className = 'quick-access-menu';
+      menu.setAttribute('aria-label', 'Quick access links');
+      menu.innerHTML = `<strong>Quick access</strong><a href="https://www.srmuniversity.ac.in/center-of-excellence" target="_blank" rel="noopener noreferrer">Centres of Excellence ↗</a><a href="https://www.srmuniversity.ac.in/examination" target="_blank" rel="noopener noreferrer">Examination ↗</a><a href="https://www.srmuniversity.ac.in/feekart" target="_blank" rel="noopener noreferrer">Fee payment ↗</a><a href="https://www.srmuniversity.ac.in/downloads" target="_blank" rel="noopener noreferrer">Downloads ↗</a><a href="https://www.srmuniversity.ac.in/faq" target="_blank" rel="noopener noreferrer">FAQs ↗</a><a href="https://www.srmuniversity.ac.in/careers" target="_blank" rel="noopener noreferrer">Careers ↗</a><a href="https://erpsrm.com/srmhonline/studentportal/loginManager/youLogin.jsp" target="_blank" rel="noopener noreferrer">Student portal ↗</a><a href="https://erpsrm.com/srmparentportal/parents/loginManager/youLogin.jsp" target="_blank" rel="noopener noreferrer">Parent portal ↗</a><a href="https://erpsrm.com/srmhonline/srmhalumni/loginManager/youLogin.jsp" target="_blank" rel="noopener noreferrer">Alumni portal ↗</a><a href="https://erpsrm.com/evarsitysrmh/usermanager/loginManager/youLogin.jsp" target="_blank" rel="noopener noreferrer">e-Varsity ERP ↗</a>`;
+      document.body.appendChild(menu);
+      portalBtn.setAttribute('aria-expanded', 'true');
     });
   }
 
   // Accessibility tab
   const accessTab = document.getElementById('accessibility-tab');
   if (accessTab) {
+    accessTab.setAttribute('aria-expanded', 'false');
     accessTab.addEventListener('click', () => {
-      showToast("Accessibility tools: High Contrast / Large Text mode active");
+      let panel = document.getElementById('accessibility-panel');
+      if (panel) {
+        panel.remove();
+        accessTab.setAttribute('aria-expanded', 'false');
+        return;
+      }
+      panel = document.createElement('div');
+      panel.id = 'accessibility-panel';
+      panel.className = 'accessibility-panel';
+      panel.innerHTML = '<strong>Accessibility options</strong><button type="button" data-a11y="large">Larger text</button><button type="button" data-a11y="contrast">High contrast</button><button type="button" data-a11y="reset">Reset</button>';
+      document.body.appendChild(panel);
+      accessTab.setAttribute('aria-expanded', 'true');
+      panel.addEventListener('click', event => {
+        const action = event.target.dataset.a11y;
+        if (action === 'large') document.body.classList.toggle('a11y-large-text');
+        if (action === 'contrast') document.body.classList.toggle('a11y-high-contrast');
+        if (action === 'reset') document.body.classList.remove('a11y-large-text', 'a11y-high-contrast');
+        if (action) localStorage.setItem('srmuh-a11y', JSON.stringify({large:document.body.classList.contains('a11y-large-text'),contrast:document.body.classList.contains('a11y-high-contrast')}));
+      });
     });
   }
 
@@ -175,9 +245,22 @@ function initNavigation() {
   if (convocationTab) {
     convocationTab.addEventListener('click', (e) => {
       e.preventDefault();
-      showToast("SRMUH Fourth Convocation: Official Notice and Live Stream");
+      navigateInteriorPage('notices');
     });
   }
+
+  const searchToggle = document.getElementById('utility-search-toggle');
+  searchToggle?.addEventListener('click', () => {
+    if (window.location.hash.startsWith('#page/')) window.location.hash = '#search-programmes';
+    document.getElementById('search-programmes')?.scrollIntoView({behavior:'smooth'});
+    window.setTimeout(() => document.getElementById('programme-keyword')?.focus(), 280);
+  });
+
+  try {
+    const prefs = JSON.parse(localStorage.getItem('srmuh-a11y') || '{}');
+    document.body.classList.toggle('a11y-large-text', Boolean(prefs.large));
+    document.body.classList.toggle('a11y-high-contrast', Boolean(prefs.contrast));
+  } catch { /* ignore invalid optional display preferences */ }
 }
 
 /* ==========================================================================
@@ -270,6 +353,8 @@ function initSearchProgrammes() {
   const degreeSelect = document.getElementById('degree-select');
   const interestSelect = document.getElementById('interest-select');
   const searchForm = document.getElementById('programmes-search-form');
+  const keyword = document.getElementById('programme-keyword');
+  const results = document.getElementById('programme-search-results');
 
   degreeOptions.forEach(opt => {
     const el = document.createElement('option');
@@ -287,20 +372,26 @@ function initSearchProgrammes() {
 
   searchForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const deptSection = document.getElementById('study-departments');
-    if (deptSection) {
-      deptSection.scrollIntoView({ behavior: 'smooth' });
-    }
-    const selDegree = degreeSelect.value || "All Degrees";
-    const selInterest = interestSelect.value || "All Interests";
-    showToast(`Showing programmes for: ${selInterest} (${selDegree})`);
+    const courseQuery = keyword.value.trim().toLowerCase();
+    const degree = degreeSelect.value;
+    const interest = interestSelect.value;
+    const selectedFaculty = interest.includes('Engineering') ? 'Engineering & Technology' : interest.includes('Management') ? 'Management Studies' : interest.includes('Law') ? 'Law' : interest.includes('Commerce') ? 'Finance & Commerce' : interest.includes('Hotel') ? 'Hotel Management' : interest.includes('Agricultur') ? 'Science & Humanities' : interest === 'Science & Humanities' || interest.includes('Biotechnology') ? 'Science & Humanities' : '';
+    const interestTerm = interest.includes('Computer Science') ? 'computer science' : interest.includes('Biomedical') ? 'biomedical' : interest.includes('Agricultur') ? 'agriculture' : '';
+    const isUG = degree.startsWith('Undergraduate');
+    const isPG = degree.startsWith('Postgraduate');
+    const isPhD = degree.toLowerCase().includes('ph.d') || degree.toLowerCase().includes('doctoral');
+    const isIntegrated = degree.toLowerCase().includes('integrated');
+    const matches = programmeCatalogue.filter(course => (!courseQuery || course.name.toLowerCase().includes(courseQuery) || course.faculty.toLowerCase().includes(courseQuery)) && (!interestTerm || course.name.toLowerCase().includes(interestTerm)) && (!selectedFaculty || course.faculty === selectedFaculty) && (!isUG || course.level === 'UG') && (!isPG || course.level === 'PG') && (!isPhD || course.level === 'PhD') && (!isIntegrated || course.level === 'Integrated'));
+    results.hidden = false;
+    results.innerHTML = `<div class="programme-search-results-heading"><strong>${matches.length} matching programme${matches.length===1?'':'s'}</strong><a href="#page/programmes" data-route="programmes">Browse full catalogue →</a></div>${matches.length ? `<div class="programme-search-result-grid">${matches.slice(0,12).map(course=>`<a href="#page/course-${course.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}" data-route="course-${course.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}"><strong>${course.name}</strong><span>${course.faculty} · ${course.duration} · ₹${course.fee.toLocaleString('en-IN')}/year</span></a>`).join('')}</div>`:'<p>No courses match those filters. Try a broader search or select All Interests.</p>'}`;
+    results.scrollIntoView({behavior:'smooth',block:'nearest'});
   });
 
   const biharLink = document.getElementById('bihar-scheme-link');
   if (biharLink) {
     biharLink.addEventListener('click', (e) => {
       e.preventDefault();
-      showToast("Bihar Student Credit Card Scheme: 0% collateral financial assistance");
+      navigateInteriorPage('bihar-credit-card');
     });
   }
 }
@@ -320,10 +411,13 @@ function renderDepartments() {
   `).join('');
 
   container.querySelectorAll('.dept-card').forEach(card => {
-    card.addEventListener('click', () => {
+    const openDepartment = () => {
       const name = card.querySelector('.dept-name').textContent;
-      showToast(`Selected: ${name}`);
-    });
+      sessionStorage.setItem('srmuhCatalogueQuery', name.replace(/^Department of /, '').replace(/\s*\(.+\)$/, ''));
+      navigateInteriorPage(facultyRouteFromText(name));
+    };
+    card.addEventListener('click', openDepartment);
+    card.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDepartment(); } });
   });
 }
 
@@ -357,7 +451,7 @@ function renderFaculties() {
 
   container.querySelectorAll('.faculty-explore-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      showToast(`Exploring ${btn.getAttribute('data-fac')}`);
+      navigateInteriorPage(facultyRouteFromText(btn.getAttribute('data-fac')));
     });
   });
 }
@@ -372,7 +466,7 @@ function initSpotlightCarousel() {
   if (!slider) return;
 
   slider.innerHTML = spotlightSlides.map(slide => `
-    <div class="spotlight-slide-card">
+    <a href="#page/news" data-route="news" class="spotlight-slide-card">
       <div class="spotlight-media" style="background: ${slide.gradient}">
         <span class="spotlight-tag">${slide.tag}</span>
         <span class="spotlight-date">${slide.date}</span>
@@ -381,7 +475,7 @@ function initSpotlightCarousel() {
         <h3 class="spotlight-title">${slide.title}</h3>
         <p class="spotlight-summary">${slide.summary}</p>
       </div>
-    </div>
+    </a>
   `).join('');
 
   prevBtn.addEventListener('click', () => {
@@ -465,7 +559,7 @@ function renderPlacements() {
   if (viewMoreBtn) {
     viewMoreBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      showToast("View More: Opening Corporate Relations & Placements Report");
+      navigateInteriorPage('placements');
     });
   }
 }
@@ -535,7 +629,7 @@ function initTestimonialsCarousel() {
 
   if (viewMoreBtn) {
     viewMoreBtn.addEventListener('click', () => {
-      showToast("View More Testimonials: Opening Alumni Success Stories");
+      navigateInteriorPage('alumni');
     });
   }
 }
@@ -551,8 +645,9 @@ function initEventsCalendar() {
   const todayBtn = document.getElementById('calendar-today-btn');
   const eventsListContainer = document.getElementById('events-list-container');
 
-  let currentYear = 2026;
-  let currentMonth = 9; // 0-indexed: 9 = October
+  const today = new Date();
+  let currentYear = today.getFullYear();
+  let currentMonth = today.getMonth();
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -586,7 +681,7 @@ function initEventsCalendar() {
     // Days of month
     for (let d = 1; d <= totalDays; d++) {
       // Highlight today if October 2026 (or matching real date)
-      const isToday = (currentMonth === 9 && currentYear === 2026 && d === realCurrentDate) || (d === 13);
+      const isToday = currentMonth === today.getMonth() && currentYear === today.getFullYear() && d === today.getDate();
       html += `
         <div class="cal-day-cell ${isToday ? 'is-today' : ''}" data-day="${d}">
           ${d}
@@ -600,7 +695,8 @@ function initEventsCalendar() {
     gridContainer.querySelectorAll('.cal-day-cell:not(.empty)').forEach(cell => {
       cell.addEventListener('click', () => {
         const day = cell.getAttribute('data-day');
-        showToast(`Events for ${day} ${monthNames[currentMonth]} ${currentYear}`);
+        renderEventList(day, currentMonth);
+        gridContainer.querySelectorAll('.cal-day-cell').forEach(item=>item.classList.toggle('is-selected',item===cell));
       });
     });
   }
@@ -612,6 +708,7 @@ function initEventsCalendar() {
       currentYear--;
     }
     renderCalendar();
+    renderEventList();
   });
 
   nextBtn.addEventListener('click', () => {
@@ -621,37 +718,29 @@ function initEventsCalendar() {
       currentYear++;
     }
     renderCalendar();
+    renderEventList();
   });
 
   todayBtn.addEventListener('click', () => {
-    currentMonth = 9; // October 2026 default
-    currentYear = 2026;
+    currentMonth = today.getMonth();
+    currentYear = today.getFullYear();
     renderCalendar();
-    showToast("Reset to October 2026");
+    renderEventList();
   });
 
   renderCalendar();
 
   // Render Events list
-  eventsListContainer.innerHTML = calendarEvents.map(evt => `
-    <div class="event-item-row" tabindex="0">
-      <div class="event-date-block">
-        <span class="event-day-num">${evt.day}</span>
-        <span class="event-month-text">${evt.month}</span>
-      </div>
-      <div class="event-details">
-        <span class="event-title">${evt.title}</span>
-        <span class="event-category-tag">${evt.category}</span>
-      </div>
-    </div>
-  `).join('');
-
-  eventsListContainer.querySelectorAll('.event-item-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const title = row.querySelector('.event-title').textContent;
-      showToast(`Event Details: ${title}`);
-    });
-  });
+  function renderEventList(day = '', month = currentMonth) {
+    const monthAbbrev = monthNames[month].slice(0,3).toUpperCase();
+    const visibleEvents = calendarEvents.filter(evt => currentYear === 2026 && evt.month === monthAbbrev && (!day || Number(evt.day) === Number(day)));
+    eventsListContainer.innerHTML = visibleEvents.length ? visibleEvents.map(evt => `
+      <a class="event-item-row" href="${evt.url || '#page/news'}" ${evt.url ? 'target="_blank" rel="noopener noreferrer"' : 'data-route="news"'}>
+        <span class="event-date-block"><span class="event-day-num">${evt.day}</span><span class="event-month-text">${evt.month}</span></span>
+        <span class="event-details"><span class="event-title">${evt.title}</span><span class="event-category-tag">${evt.category}</span></span>
+      </a>`).join('') : `<p class="events-empty-state">${day ? `No events are listed for ${day} ${monthNames[month]}.` : `No events are listed for ${monthNames[month]} ${currentYear}.`} Browse <a href="#page/news" data-route="news">news and notices</a> for university updates.</p>`;
+  }
+  renderEventList();
 }
 
 /* ==========================================================================
@@ -661,16 +750,52 @@ function initFooterAndTicker() {
   // Render Important Links
   const linksContainer = document.getElementById('footer-important-links-list');
   if (linksContainer) {
-    linksContainer.innerHTML = importantLinks.map(link => `
-      <li><a href="#demo-link" class="footer-sub-link">${link}</a></li>
-    `).join('');
-
-    linksContainer.querySelectorAll('.footer-sub-link').forEach(a => {
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        showToast(`Demo site: ${a.textContent} page is not available`);
-      });
-    });
+    const routeFor = (label) => {
+      const value = label.toLowerCase();
+      if (value.includes('quality')) return 'iqac';
+      if (value.includes('nirf') || value.includes('recognition') || value.includes('regulatory')) return 'recognitions';
+      if (value.includes('ncc')) return 'ncc';
+      if (value.includes('nss')) return 'nss';
+      if (value.includes('contact')) return 'contact';
+      if (value.includes('calendar')) return 'academic-calendar';
+      if (value.includes('download') || value.includes('brochure')) return 'downloads';
+      if (value.includes('resource')) return 'library';
+      if (value.includes('placement')) return 'placements';
+      if (value.includes('sparks')) return 'sparks';
+      if (value.includes('sdg')) return 'sdg-partnership';
+      if (value.includes('academic bank')) return 'abc';
+      if (value.includes('national academic')) return 'nad';
+      if (value.includes('best practices')) return 'institutional-best-practices';
+      if (value.includes('distinctiveness')) return 'institutional-distinctiveness';
+      if (value.includes('international')) return 'international-admissions';
+      if (value.includes('annual report') || value.includes('audited account')) return 'annual-reports';
+      if (value.includes('scholarship')) return 'scholarships';
+      if (value.includes('fee')) return 'fees';
+      if (value.includes('alumni')) return 'alumni';
+      if (value.includes('research') || value.includes('patent') || value.includes('project')) return 'research';
+      if (value.includes('sports')) return 'sports';
+      if (value.includes('transport')) return 'transport';
+      if (value.includes('accommodation') || value.includes('hostel')) return 'accommodation';
+      if (value.includes('admission')) return 'admissions';
+      if (value.includes('vision')) return 'vision-mission';
+      if (value.includes('organogram')) return 'organogram';
+      if (value.includes('statute')) return 'statutes';
+      if (value.includes('statutory bodies')) return 'statutes';
+      if (value.includes('committees')) return 'administration';
+      if (value.includes('board of studies')) return 'statutes';
+      if (value.includes('law publications')) return 'research-publications';
+      if (value.includes('welfare')) return 'student-life';
+      if (value.includes('anti-ragging')) return 'anti-ragging';
+      if (value.includes('code of conduct')) return 'code-of-conduct';
+      if (value.includes('feekart')) return 'fees';
+      if (value.includes('nep')) return 'nep-saarthi';
+      if (value.includes('disclosure')) return 'self-disclosure';
+      if (value.includes('academic bank') || value.includes('national academic')) return 'about';
+      if (value.includes('best practices')) return 'about';
+      if (value.includes('distinctiveness')) return 'about';
+      return 'about';
+    };
+    linksContainer.innerHTML = importantLinks.map(link => `<li><a href="#page/${routeFor(link)}" data-route="${routeFor(link)}" class="footer-sub-link">${link}</a></li>`).join('');
   }
 
   // Last updated date
@@ -685,7 +810,7 @@ function initFooterAndTicker() {
   const tickerTrack = document.getElementById('ticker-marquee-track');
   if (tickerTrack) {
     const tickerContent = tickerNotices.map(notice => `
-      <span class="ticker-item">${notice}</span>
+      <a class="ticker-item" href="#page/notices" data-route="notices">${notice}</a>
       <span class="ticker-sep">|</span>
     `).join('');
 
@@ -693,25 +818,11 @@ function initFooterAndTicker() {
     tickerTrack.innerHTML = tickerContent + tickerContent + tickerContent;
   }
 
-  // Hero action buttons
   const heroApplyBtn = document.getElementById('hero-apply-btn');
-  if (heroApplyBtn) {
-    heroApplyBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = document.getElementById('search-programmes');
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-      showToast("Online admissions information for 2027-28");
-    });
-  }
-
-  // Generic demo toasts for portals, flyers, socials
-  document.querySelectorAll('a[href^="#demo-"]').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      showToast("Demo site: this feature is not available");
-    });
+  heroApplyBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('search-programmes')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('programme-keyword')?.focus({preventScroll:true});
   });
 }
 
