@@ -72,6 +72,19 @@ export class VoiceService {
    */
   setStatus(newStatus) {
     this.status = newStatus;
+    if (newStatus === 'thinking' || newStatus === 'speaking') {
+      if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+        try {
+          this.mediaRecorder.stop();
+        } catch (e) {}
+      }
+      if (this.mediaStream) {
+        try {
+          this.mediaStream.getTracks().forEach((track) => track.stop());
+        } catch (e) {}
+        this.mediaStream = null;
+      }
+    }
     this.onStatusChange(newStatus);
   }
 
@@ -216,14 +229,23 @@ export class VoiceService {
     // Halt any previous playback
     this.stopPlayback();
 
+    const chunks = [...this.audioChunks];
+    this.audioChunks = [];
+
     try {
-      const blob = new Blob(this.audioChunks, { type: 'audio/mp3' });
+      const blob = new Blob(chunks, { type: 'audio/mp3' });
       const audioUrl = URL.createObjectURL(blob);
       this.currentAudio = new Audio(audioUrl);
       this.isPlaying = true;
       this.hasPlayedAudio = true;
       this.speakingStartTime = Date.now();
       this.setStatus('speaking');
+
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        try {
+          this.ws.send(JSON.stringify({ type: 'client_speaking_start' }));
+        } catch (e) {}
+      }
 
       const playPromise = this.currentAudio.play();
       if (playPromise !== undefined) {
@@ -237,23 +259,28 @@ export class VoiceService {
         });
       }
 
-      this.currentAudio.onended = () => {
+      const onDone = () => {
         URL.revokeObjectURL(audioUrl);
         this.currentAudio = null;
         this.isPlaying = false;
-        this.audioChunks = [];
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          try {
+            this.ws.send(JSON.stringify({ type: 'client_speaking_end' }));
+          } catch (e) {}
+        }
         this.setStatus('idle');
       };
+
+      this.currentAudio.onended = onDone;
 
       this.currentAudio.onerror = () => {
         URL.revokeObjectURL(audioUrl);
         this.currentAudio = null;
         this.isPlaying = false;
-        this.audioChunks = [];
         if (this.lastAnswerText) {
           this.speakWithSpeechSynthesis(this.lastAnswerText);
         } else {
-          this.setStatus('idle');
+          onDone();
         }
       };
     } catch (e) {
@@ -315,14 +342,30 @@ export class VoiceService {
       this.speakingStartTime = Date.now();
       this.setStatus('speaking');
 
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        try {
+          this.ws.send(JSON.stringify({ type: 'client_speaking_start' }));
+        } catch (e) {}
+      }
+
       utterance.onend = () => {
         this.isPlaying = false;
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          try {
+            this.ws.send(JSON.stringify({ type: 'client_speaking_end' }));
+          } catch (e) {}
+        }
         this.setStatus('idle');
       };
 
       utterance.onerror = (e) => {
         console.warn('[VoiceService] SpeechSynthesis utterance ended with error:', e);
         this.isPlaying = false;
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          try {
+            this.ws.send(JSON.stringify({ type: 'client_speaking_end' }));
+          } catch (e) {}
+        }
         this.setStatus('idle');
       };
 
@@ -385,6 +428,7 @@ export class VoiceService {
     this.primeAudio();
     this.lastAnswerText = '';
     this.hasPlayedAudio = false;
+    this.audioChunks = [];
 
     // 1. If currently speaking, stop playback immediately
     if (this.isPlaying) {
@@ -467,9 +511,9 @@ export class VoiceService {
       this.mediaRecorder = new MediaRecorder(this.mediaStream);
     }
 
-    // Stream binary audio chunks over WebSocket every 250ms (only while not actively speaking)
+    // Stream binary audio chunks over WebSocket every 250ms (only while listening and not speaking)
     this.mediaRecorder.ondataavailable = (event) => {
-      if (event.data && event.data.size > 0 && !this.isPlaying) {
+      if (event.data && event.data.size > 0 && !this.isPlaying && this.status === 'listening') {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
           try {
             this.ws.send(event.data);
