@@ -776,6 +776,7 @@ function initFooterAndTicker() {
       if (value.includes('sports')) return 'sports';
       if (value.includes('transport')) return 'transport';
       if (value.includes('accommodation') || value.includes('hostel')) return 'accommodation';
+      if (value.includes('chart')) return 'organogram';
       if (value.includes('admission')) return 'admissions';
       if (value.includes('vision')) return 'vision-mission';
       if (value.includes('organogram')) return 'organogram';
@@ -790,9 +791,6 @@ function initFooterAndTicker() {
       if (value.includes('feekart')) return 'fees';
       if (value.includes('nep')) return 'nep-saarthi';
       if (value.includes('disclosure')) return 'self-disclosure';
-      if (value.includes('academic bank') || value.includes('national academic')) return 'about';
-      if (value.includes('best practices')) return 'about';
-      if (value.includes('distinctiveness')) return 'about';
       return 'about';
     };
     linksContainer.innerHTML = importantLinks.map(link => `<li><a href="#page/${routeFor(link)}" data-route="${routeFor(link)}" class="footer-sub-link">${link}</a></li>`).join('');
