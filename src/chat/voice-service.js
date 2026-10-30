@@ -3,10 +3,12 @@
  * ----------------------------------------------------
  * Handles browser microphone capture, Web Audio API analysis,
  * bidirectional WebSocket audio streaming to the backend,
- * assistant TTS audio playback, and instant barge-in interruption.
+ * assistant TTS audio playback (Deepgram Aura TTS with Web Speech API fallback),
+ * and instant barge-in interruption.
  */
 
 import { CHAT_CONFIG } from './chat-config.js';
+import { sendMessage } from './chat-service.js';
 
 export class VoiceService {
   constructor(options = {}) {
@@ -25,6 +27,13 @@ export class VoiceService {
     this.currentAudio = null;
     this.audioChunks = [];
     this.isPlaying = false;
+    this.lastAnswerText = '';
+    this.hasPlayedAudio = false;
+    this.speakingStartTime = 0;
+
+    // Fallback SpeechRecognition instance if WebSocket is offline
+    this.recognition = null;
+    this.isUsingWebSpeechFallback = false;
 
     // Callbacks
     this.onStatusChange = options.onStatusChange || (() => {});
@@ -33,6 +42,29 @@ export class VoiceService {
     this.onAnswer = options.onAnswer || (() => {});
     this.onError = options.onError || (() => {});
     this.onInterrupted = options.onInterrupted || (() => {});
+  }
+
+  /**
+   * Prime audio context and speech synthesis during user gesture (click)
+   * to guarantee autoplay permissions are unlocked across all browsers.
+   */
+  primeAudio() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        if (!this.audioContext) {
+          this.audioContext = new AudioCtx();
+        }
+        if (this.audioContext.state === 'suspended') {
+          this.audioContext.resume();
+        }
+      }
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+      }
+    } catch (e) {
+      console.warn('[VoiceService] Audio prime notice:', e);
+    }
   }
 
   /**
@@ -82,7 +114,6 @@ export class VoiceService {
       };
 
       this.ws.onerror = (err) => {
-        this.onError('Unable to connect to the voice server at ' + this.wsUrl);
         reject(err);
       };
 
@@ -116,14 +147,23 @@ export class VoiceService {
         if (this.status === 'idle') {
           this.setStatus('idle');
         }
+      } else if (serverStatus === 'idle') {
+        // If server transitions to idle and we haven't played audio yet but have an answer
+        if (!this.hasPlayedAudio && !this.isPlaying && this.lastAnswerText) {
+          this.speakWithSpeechSynthesis(this.lastAnswerText);
+        } else if (!this.isPlaying) {
+          this.setStatus('idle');
+        }
       } else {
         this.setStatus(serverStatus);
       }
     } else if (type === 'transcript') {
       this.onTranscript(data.text, Boolean(data.is_final));
     } else if (type === 'answer_chunk') {
+      this.lastAnswerText = (this.lastAnswerText || '') + (data.delta || '');
       this.onAnswerChunk(data.delta || '');
     } else if (type === 'answer') {
+      this.lastAnswerText = data.text || '';
       this.onAnswer(data.text || '');
     } else if (type === 'audio') {
       // Received base64 audio chunk from Deepgram Aura TTS
@@ -161,32 +201,137 @@ export class VoiceService {
   }
 
   /**
-   * Play accumulated audio chunks
+   * Play accumulated audio chunks (or fallback to Web Speech API TTS)
    */
   finishAudioStream() {
-    if (this.audioChunks.length === 0) return;
+    if (this.audioChunks.length === 0) {
+      if (this.lastAnswerText && !this.hasPlayedAudio) {
+        this.speakWithSpeechSynthesis(this.lastAnswerText);
+      } else {
+        this.setStatus('idle');
+      }
+      return;
+    }
 
     // Halt any previous playback
     this.stopPlayback();
 
-    const blob = new Blob(this.audioChunks, { type: 'audio/mp3' });
-    const audioUrl = URL.createObjectURL(blob);
-    this.currentAudio = new Audio(audioUrl);
-    this.isPlaying = true;
-    this.setStatus('speaking');
+    try {
+      const blob = new Blob(this.audioChunks, { type: 'audio/mp3' });
+      const audioUrl = URL.createObjectURL(blob);
+      this.currentAudio = new Audio(audioUrl);
+      this.isPlaying = true;
+      this.hasPlayedAudio = true;
+      this.speakingStartTime = Date.now();
+      this.setStatus('speaking');
 
-    this.currentAudio.play().catch((err) => {
-      console.warn('[VoiceService] Autoplay blocked or error:', err);
+      const playPromise = this.currentAudio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('[VoiceService] Audio element play error, falling back to Web Speech API:', err);
+          if (this.lastAnswerText) {
+            this.speakWithSpeechSynthesis(this.lastAnswerText);
+          } else {
+            this.setStatus('idle');
+          }
+        });
+      }
+
+      this.currentAudio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        this.currentAudio = null;
+        this.isPlaying = false;
+        this.audioChunks = [];
+        this.setStatus('idle');
+      };
+
+      this.currentAudio.onerror = () => {
+        URL.revokeObjectURL(audioUrl);
+        this.currentAudio = null;
+        this.isPlaying = false;
+        this.audioChunks = [];
+        if (this.lastAnswerText) {
+          this.speakWithSpeechSynthesis(this.lastAnswerText);
+        } else {
+          this.setStatus('idle');
+        }
+      };
+    } catch (e) {
+      console.warn('[VoiceService] Audio playback exception, falling back to speech synthesis:', e);
+      if (this.lastAnswerText) {
+        this.speakWithSpeechSynthesis(this.lastAnswerText);
+      } else {
+        this.setStatus('idle');
+      }
+    }
+  }
+
+  /**
+   * Browser Web Speech API fallback for Text-to-Speech
+   * Guarantees spoken voice output even if Deepgram audio stream fails.
+   */
+  speakWithSpeechSynthesis(text) {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
       this.setStatus('idle');
-    });
+      return;
+    }
 
-    this.currentAudio.onended = () => {
-      URL.revokeObjectURL(audioUrl);
-      this.currentAudio = null;
+    this.stopPlayback();
+
+    const cleanText = (text || '')
+      .replace(/[*_#`~[\]()]/g, ' ')
+      .replace(/https?:\/\/\S+/g, '')
+      .trim();
+
+    if (!cleanText) {
+      this.setStatus('idle');
+      return;
+    }
+
+    try {
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      const voices = window.speechSynthesis.getVoices();
+      const englishVoice = voices.find(
+        (v) =>
+          v.lang.startsWith('en') &&
+          (v.name.includes('Natural') ||
+            v.name.includes('Female') ||
+            v.name.includes('Google') ||
+            v.name.includes('Samantha') ||
+            v.name.includes('Jenny'))
+      ) || voices.find((v) => v.lang.startsWith('en'));
+
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+      }
+
+      this.isPlaying = true;
+      this.hasPlayedAudio = true;
+      this.speakingStartTime = Date.now();
+      this.setStatus('speaking');
+
+      utterance.onend = () => {
+        this.isPlaying = false;
+        this.setStatus('idle');
+      };
+
+      utterance.onerror = (e) => {
+        console.warn('[VoiceService] SpeechSynthesis utterance ended with error:', e);
+        this.isPlaying = false;
+        this.setStatus('idle');
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('[VoiceService] SpeechSynthesis execution error:', err);
       this.isPlaying = false;
-      this.audioChunks = [];
       this.setStatus('idle');
-    };
+    }
   }
 
   /**
@@ -194,10 +339,19 @@ export class VoiceService {
    */
   stopPlayback() {
     if (this.currentAudio) {
-      this.currentAudio.pause();
-      this.currentAudio.currentTime = 0;
+      try {
+        this.currentAudio.pause();
+        this.currentAudio.currentTime = 0;
+      } catch (e) {}
       this.currentAudio = null;
     }
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
+    }
+
     this.isPlaying = false;
     this.audioChunks = [];
   }
@@ -217,7 +371,9 @@ export class VoiceService {
   interrupt() {
     this.stopPlayback();
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type: 'interrupt' }));
+      try {
+        this.ws.send(JSON.stringify({ type: 'interrupt' }));
+      } catch (e) {}
     }
     this.handleInterruption();
   }
@@ -226,17 +382,24 @@ export class VoiceService {
    * Start capturing microphone audio and streaming over WebSocket
    */
   async startListening() {
+    this.primeAudio();
+    this.lastAnswerText = '';
+    this.hasPlayedAudio = false;
+
     // 1. If currently speaking, stop playback immediately
     if (this.isPlaying) {
       this.interrupt();
     }
 
-    // 2. Ensure WebSocket connection
+    // 2. Try WebSocket connection first; fallback to browser SpeechRecognition if unreachable
+    let connected = false;
     try {
       await this.ensureConnection();
+      connected = true;
+      this.isUsingWebSpeechFallback = false;
     } catch (err) {
-      this.onError('Could not establish voice connection with backend.');
-      return false;
+      console.warn('[VoiceService] Voice WebSocket unreachable, falling back to Web Speech API:', err);
+      return this.startWebSpeechFallback();
     }
 
     // 3. Request user microphone
@@ -267,7 +430,12 @@ export class VoiceService {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
-        this.audioContext = new AudioCtx();
+        if (!this.audioContext || this.audioContext.state === 'closed') {
+          this.audioContext = new AudioCtx();
+        }
+        if (this.audioContext.state === 'suspended') {
+          await this.audioContext.resume();
+        }
         const source = this.audioContext.createMediaStreamSource(this.mediaStream);
         this.analyser = this.audioContext.createAnalyser();
         this.analyser.fftSize = 256;
@@ -299,24 +467,99 @@ export class VoiceService {
       this.mediaRecorder = new MediaRecorder(this.mediaStream);
     }
 
-    // Stream binary audio chunks over WebSocket every 250ms
+    // Stream binary audio chunks over WebSocket every 250ms (only while not actively speaking)
     this.mediaRecorder.ondataavailable = (event) => {
-      if (event.data && event.data.size > 0) {
+      if (event.data && event.data.size > 0 && !this.isPlaying) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-          this.ws.send(event.data);
+          try {
+            this.ws.send(event.data);
+          } catch (e) {}
         }
       }
     };
 
     // Send start signal
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type: 'start_stream', mime: mimeType }));
+      try {
+        this.ws.send(JSON.stringify({ type: 'start_stream', mime: mimeType }));
+      } catch (e) {}
     }
 
     // Start recording with 250ms slice interval
     this.mediaRecorder.start(250);
     this.setStatus('listening');
     return true;
+  }
+
+  /**
+   * Browser SpeechRecognition fallback when backend WebSocket is unavailable
+   */
+  startWebSpeechFallback() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      this.onError('Voice assistant service is currently unavailable.');
+      this.setStatus('idle');
+      return false;
+    }
+
+    try {
+      this.recognition = new SpeechRecognition();
+      this.recognition.continuous = false;
+      this.recognition.interimResults = true;
+      this.recognition.lang = 'en-US';
+
+      this.isUsingWebSpeechFallback = true;
+      this.setStatus('listening');
+
+      let finalTranscript = '';
+
+      this.recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        const text = finalTranscript || interim;
+        this.onTranscript(text, Boolean(finalTranscript));
+      };
+
+      this.recognition.onerror = (event) => {
+        console.warn('[VoiceService] SpeechRecognition error:', event.error);
+        if (event.error === 'not-allowed') {
+          this.onError('Microphone permission denied.');
+        }
+        this.setStatus('idle');
+      };
+
+      this.recognition.onend = async () => {
+        if (finalTranscript) {
+          this.setStatus('thinking');
+          try {
+            const resp = await sendMessage(finalTranscript);
+            const answer = resp.answer || 'Thank you for your question.';
+            this.lastAnswerText = answer;
+            this.onAnswer(answer);
+            this.speakWithSpeechSynthesis(answer);
+          } catch (e) {
+            this.onError('Could not process voice request.');
+            this.setStatus('idle');
+          }
+        } else {
+          this.setStatus('idle');
+        }
+      };
+
+      this.recognition.start();
+      return true;
+    } catch (e) {
+      console.warn('[VoiceService] SpeechRecognition start failed:', e);
+      this.onError('Unable to start speech recognition.');
+      this.setStatus('idle');
+      return false;
+    }
   }
 
   /**
@@ -338,10 +581,12 @@ export class VoiceService {
       }
       const avg = sum / dataArray.length;
 
-      // When assistant is speaking or thinking and user speaks loudly
-      if ((this.status === 'speaking' || this.status === 'thinking' || this.isPlaying) && avg > 30) {
+      // Only allow voice barge-in if the bot has been speaking for at least 1.2s
+      // and volume is above 60 to prevent speaker self-feedback from triggering false interrupts.
+      const timeSinceSpeech = Date.now() - this.speakingStartTime;
+      if (this.isPlaying && this.status === 'speaking' && timeSinceSpeech > 1200 && avg > 60) {
         consecutiveActiveFrames++;
-        if (consecutiveActiveFrames >= 3) {
+        if (consecutiveActiveFrames >= 4) {
           // Barge-in detected!
           this.interrupt();
           consecutiveActiveFrames = 0;
@@ -360,6 +605,14 @@ export class VoiceService {
    * Stop capturing microphone audio
    */
   stopListening() {
+    if (this.isUsingWebSpeechFallback && this.recognition) {
+      try {
+        this.recognition.stop();
+      } catch (e) {}
+      this.recognition = null;
+      return;
+    }
+
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       try {
         this.mediaRecorder.stop();
@@ -376,19 +629,14 @@ export class VoiceService {
       this.animFrameId = null;
     }
 
-    if (this.audioContext && this.audioContext.state !== 'closed') {
-      try {
-        this.audioContext.close();
-      } catch (e) {}
-      this.audioContext = null;
-    }
-
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type: 'stop_stream' }));
+      try {
+        this.ws.send(JSON.stringify({ type: 'stop_stream' }));
+      } catch (e) {}
     }
 
     if (this.status === 'listening') {
-      this.setStatus('idle');
+      this.setStatus('thinking');
     }
   }
 
@@ -405,6 +653,12 @@ export class VoiceService {
    */
   disconnect() {
     this.cleanupAudio();
+    if (this.audioContext && this.audioContext.state !== 'closed') {
+      try {
+        this.audioContext.close();
+      } catch (e) {}
+      this.audioContext = null;
+    }
     if (this.ws) {
       try {
         this.ws.close();

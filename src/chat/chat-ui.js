@@ -218,78 +218,45 @@ export function initChat() {
         voiceBar.hidden = false;
         voiceStatusText.textContent = 'Saarthi is thinking...';
         micBtn.classList.add('is-thinking');
-        showTypingIndicator();
       } else if (status === 'speaking') {
         voiceBar.hidden = false;
-        voiceStatusText.textContent = 'Saarthi is speaking... (Click mic to interrupt)';
+        voiceStatusText.textContent = 'Saarthi is speaking... (Click to interrupt)';
         micBtn.classList.add('is-speaking');
-        micBtn.title = 'Saarthi is speaking (Click or speak to interrupt)';
-        removeTypingIndicator();
+        micBtn.title = 'Saarthi is speaking (Click to interrupt)';
       } else {
         // Idle
         voiceBar.hidden = true;
-        micBtn.title = 'Click to speak with Saarthi';
-        removeTypingIndicator();
-        activeAssistantBubble = null;
+        micBtn.title = 'Click to speak with Saarthi (Voice conversation)';
       }
     },
 
+    // In voice-to-voice conversation, do NOT create text message bubbles in the chat dialog.
     onTranscript: (text, isFinal) => {
-      if (!text) return;
-
-      if (!interimUserBubble) {
-        interimUserBubble = document.createElement('div');
-        interimUserBubble.className = 'srmuh-message-bubble user is-interim';
-        chatBody.appendChild(interimUserBubble);
-      }
-
-      interimUserBubble.textContent = text;
-      chatBody.scrollTop = chatBody.scrollHeight;
-
-      if (isFinal) {
-        interimUserBubble.classList.remove('is-interim');
-        interimUserBubble = null;
+      if (text && voiceService.status === 'listening') {
+        voiceStatusText.textContent = `Listening: "${text.length > 25 ? text.slice(0, 25) + '...' : text}"`;
       }
     },
 
-    onAnswerChunk: (delta) => {
-      removeTypingIndicator();
-      if (!activeAssistantBubble) {
-        activeAssistantBubble = document.createElement('div');
-        activeAssistantBubble.className = 'srmuh-message-bubble assistant';
-        chatBody.appendChild(activeAssistantBubble);
-      }
-      activeAssistantBubble.textContent += delta;
-      chatBody.scrollTop = chatBody.scrollHeight;
+    onAnswerChunk: () => {
+      // Voice mode outputs spoken voice; no text chunk rendering in chat history.
     },
 
-    onAnswer: (fullText) => {
-      removeTypingIndicator();
-      if (!activeAssistantBubble) {
-        activeAssistantBubble = document.createElement('div');
-        activeAssistantBubble.className = 'srmuh-message-bubble assistant';
-        chatBody.appendChild(activeAssistantBubble);
-      }
-      activeAssistantBubble.textContent = fullText;
-      chatBody.scrollTop = chatBody.scrollHeight;
+    onAnswer: () => {
+      // Voice mode outputs spoken voice; no text bubble rendering in chat history.
     },
 
     onInterrupted: () => {
-      if (activeAssistantBubble && !activeAssistantBubble.textContent.includes(' [Interrupted]')) {
-        activeAssistantBubble.textContent += ' [Interrupted]';
-      }
-      removeTypingIndicator();
       voiceStatusText.textContent = 'Interrupted. Listening...';
     },
 
     onError: (errorMessage) => {
-      removeTypingIndicator();
-      const errBubble = document.createElement('div');
-      errBubble.className = 'srmuh-message-bubble assistant error';
-      errBubble.textContent = errorMessage;
-      chatBody.appendChild(errBubble);
-      chatBody.scrollTop = chatBody.scrollHeight;
-      voiceBar.hidden = true;
+      voiceBar.hidden = false;
+      voiceStatusText.textContent = errorMessage;
+      setTimeout(() => {
+        if (voiceService.status === 'idle') {
+          voiceBar.hidden = true;
+        }
+      }, 4000);
     },
   });
 
@@ -337,14 +304,14 @@ export function initChat() {
   // Microphone button click handler
   if (isEnabled && micBtn) {
     micBtn.addEventListener('click', async () => {
+      voiceService.primeAudio();
+
       if (voiceService.status === 'listening') {
-        // Stop listening manually
+        // Stop listening manually -> triggers backend transcription & answer
         voiceService.stopListening();
       } else if (voiceService.status === 'speaking' || voiceService.status === 'thinking') {
         // Instant Barge-In
         voiceService.interrupt();
-        // Immediately start listening again for next user utterance
-        await voiceService.startListening();
       } else {
         // Start listening
         await voiceService.startListening();
