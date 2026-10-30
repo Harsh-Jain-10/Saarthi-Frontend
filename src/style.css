@@ -1007,6 +1007,12 @@ button {
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
 }
 
+/* Component display styles must not override the native hidden attribute. */
+.srmuh-chat-dialog[hidden],
+.srmuh-voice-bar[hidden] {
+  display: none !important;
+}
+
 /* Mobile Bottom Sheet */
 @media (max-width: 639px) {
   .srmuh-chat-dialog {
@@ -1133,6 +1139,20 @@ button {
   color: #B91C1C;
   border-color: #FCA5A5;
 }
+
+.srmuh-message-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid #E2E8F0;
+  font-size: 0.76rem;
+}
+
+.srmuh-message-sources > span { color: #64748B; font-weight: 700; }
+.srmuh-message-sources a { color: #164B9B; text-decoration: underline; text-underline-offset: 2px; }
 
 .srmuh-message-bubble.typing {
   display: flex;
@@ -3073,4 +3093,9 @@ body.a11y-high-contrast a { text-decoration: underline; }
   .catalogue-count { padding: 0; }
   .programme-search-results-heading { align-items: start; flex-direction: column; }
   .accessibility-panel { left: 56px; top: auto; bottom: 110px; }
+}
+
+@media (max-width: 700px) {
+  .fixed-left-tabs { top: calc(var(--header-height-mobile) + 10px); transform: none; }
+  .left-tab-convocation { display: none; }
 }

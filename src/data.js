@@ -2,6 +2,8 @@
 // All sections render dynamically from this data
 
 export const tickerNotices = [
+  "Online Registration — End Semester Examination November 2026 (Odd Semesters)",
+  "End of Semester / Special / Repeat Examinations Registration Guidelines",
   "MST - II Schedule :: Faculty of Humanities",
   "MST - II Schedule :: Faculty of Sciences",
   "MST - II Schedule :: Faculty of Management & Commerce",

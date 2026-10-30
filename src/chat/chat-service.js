@@ -44,33 +44,16 @@ export async function sendMessage(query, sessionId = 'default-session') {
         sources: Array.isArray(data.sources) ? data.sources : []
       };
     } catch (err) {
-      console.error("[ChatService] Backend request failed, falling back to mock reply:", err);
-      // Fallback response on error
+      console.warn("[ChatService] Saarthi information service is unavailable:", err);
       return {
-        answer: "Sorry, our university server is momentarily unreachable. Please call our admission helpline at +91-8816033301.",
-        sources: []
+        answer: "Saarthi’s live information service is currently unreachable, so I can’t verify an answer right now. You can browse the programme catalogue or tuition schedule, or contact admissions at +91 88160 33301.",
+        sources: ['#page/programmes', '#page/fees', 'https://srmuniversity.ac.in/']
       };
     }
   }
 
-  // --- MOCK BEHAVIOR (Default 1 second simulated latency) ---
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const lower = query.toLowerCase();
-  let answer = "Thank you for reaching out to SRM University Delhi-NCR, Sonepat. Admissions for 2026-27 are currently open across Engineering, Management, Law, and Science disciplines.";
-
-  if (lower.includes('admission') || lower.includes('apply')) {
-    answer = "Admissions for 2026-27 are currently open! You can fill out the online application or contact admissions at +91-8816033301 / admissions@srmuniversity.ac.in.";
-  } else if (lower.includes('fee') || lower.includes('scholarship')) {
-    answer = "SRMUH offers merit-based scholarships up to 100% on tuition fee and accepts Bihar Student Credit Card Scheme. Detailed fee charts are available via the admissions office.";
-  } else if (lower.includes('placement') || lower.includes('package')) {
-    answer = "Our highest package is ₹50 LPA, with over 1,400+ paid internships and 350+ recruiting partners including PUMA, Ubiquiti, 3Pillar Global, and XenonStack.";
-  } else if (lower.includes('contact') || lower.includes('phone') || lower.includes('address')) {
-    answer = "Main Campus: 39, Rajiv Gandhi Education City, Delhi-NCR, Sonepat-131029, Haryana. Helplines: +91-8816033301 / 02 / 03 / 04 / 05 / 06.";
-  }
-
   return {
-    answer,
-    sources: ["https://srmuniversity.ac.in"]
+    answer: "Saarthi’s live information service is not configured in this demo. You can browse the programme catalogue or tuition schedule, or contact admissions at +91 88160 33301.",
+    sources: ['#page/programmes', '#page/fees', 'https://srmuniversity.ac.in/']
   };
 }
