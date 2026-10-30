@@ -303,24 +303,26 @@ export function initChat() {
 
   // Microphone button click handler
   if (isEnabled && micBtn) {
-    micBtn.addEventListener('click', async () => {
-      voiceService.primeAudio();
+    micBtn.addEventListener('click', () => {
+      // Voice pipeline backend is currently commented out/in progress for Stage 5.
+      // Drop down status bar and conversational notice
+      voiceBar.hidden = false;
+      voiceStatusText.textContent = 'The voice integration is currently in process.';
+      micBtn.classList.add('is-thinking');
 
-      if (voiceService.status === 'listening') {
-        // Stop listening manually -> triggers backend transcription & answer
-        voiceService.stopListening();
-      } else if (voiceService.status === 'speaking' || voiceService.status === 'thinking') {
-        // Instant Barge-In
-        voiceService.interrupt();
-      } else {
-        // Start listening
-        await voiceService.startListening();
-      }
+      const noticeBubble = document.createElement('div');
+      noticeBubble.className = 'srmuh-message-bubble assistant';
+      noticeBubble.innerHTML = '<strong>Voice Notice:</strong> The voice integration is currently in process. Please type your query in the chat box below to explore all courses, admissions, fees, and campus details!';
+      chatBody.appendChild(noticeBubble);
+      chatBody.scrollTop = chatBody.scrollHeight;
+
+      setTimeout(() => {
+        micBtn.classList.remove('is-thinking');
+      }, 3000);
     });
 
     if (voiceCancelBtn) {
       voiceCancelBtn.addEventListener('click', () => {
-        voiceService.cleanupAudio();
         voiceBar.hidden = true;
       });
     }
