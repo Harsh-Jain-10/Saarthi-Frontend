@@ -230,19 +230,48 @@ export function initChat() {
       }
     },
 
-    // In voice-to-voice conversation, do NOT create text message bubbles in the chat dialog.
     onTranscript: (text, isFinal) => {
-      if (text && voiceService.status === 'listening') {
+      if (!text) return;
+      if (voiceService.status === 'listening') {
         voiceStatusText.textContent = `Listening: "${text.length > 25 ? text.slice(0, 25) + '...' : text}"`;
+      }
+
+      if (!interimUserBubble) {
+        interimUserBubble = document.createElement('div');
+        interimUserBubble.className = 'srmuh-message-bubble user is-interim';
+        chatBody.appendChild(interimUserBubble);
+      }
+
+      interimUserBubble.textContent = text;
+      chatBody.scrollTop = chatBody.scrollHeight;
+
+      if (isFinal) {
+        interimUserBubble.classList.remove('is-interim');
+        interimUserBubble = null;
       }
     },
 
-    onAnswerChunk: () => {
-      // Voice mode outputs spoken voice; no text chunk rendering in chat history.
+    onAnswerChunk: (delta) => {
+      removeTypingIndicator();
+      if (!activeAssistantBubble) {
+        activeAssistantBubble = document.createElement('div');
+        activeAssistantBubble.className = 'srmuh-message-bubble assistant';
+        chatBody.appendChild(activeAssistantBubble);
+      }
+      activeAssistantBubble.textContent += delta;
+      chatBody.scrollTop = chatBody.scrollHeight;
     },
 
-    onAnswer: () => {
-      // Voice mode outputs spoken voice; no text bubble rendering in chat history.
+    onAnswer: (fullText) => {
+      removeTypingIndicator();
+      if (!activeAssistantBubble) {
+        activeAssistantBubble = document.createElement('div');
+        activeAssistantBubble.className = 'srmuh-message-bubble assistant';
+        chatBody.appendChild(activeAssistantBubble);
+      }
+      activeAssistantBubble.textContent = fullText;
+      chatBody.scrollTop = chatBody.scrollHeight;
+      activeAssistantBubble = null;
     },
 
     onInterrupted: () => {
@@ -303,26 +332,24 @@ export function initChat() {
 
   // Microphone button click handler
   if (isEnabled && micBtn) {
-    micBtn.addEventListener('click', () => {
-      // Voice pipeline backend is currently commented out/in progress for Stage 5.
-      // Drop down status bar and conversational notice
-      voiceBar.hidden = false;
-      voiceStatusText.textContent = 'The voice integration is currently in process.';
-      micBtn.classList.add('is-thinking');
+    micBtn.addEventListener('click', async () => {
+      voiceService.primeAudio();
 
-      const noticeBubble = document.createElement('div');
-      noticeBubble.className = 'srmuh-message-bubble assistant';
-      noticeBubble.innerHTML = '<strong>Voice Notice:</strong> The voice integration is currently in process. Please type your query in the chat box below to explore all courses, admissions, fees, and campus details!';
-      chatBody.appendChild(noticeBubble);
-      chatBody.scrollTop = chatBody.scrollHeight;
-
-      setTimeout(() => {
-        micBtn.classList.remove('is-thinking');
-      }, 3000);
+      if (voiceService.status === 'listening') {
+        // Stop listening manually -> triggers backend transcription & answer
+        voiceService.stopListening();
+      } else if (voiceService.status === 'speaking' || voiceService.status === 'thinking') {
+        // Instant Barge-In
+        voiceService.interrupt();
+      } else {
+        // Start listening
+        await voiceService.startListening();
+      }
     });
 
     if (voiceCancelBtn) {
       voiceCancelBtn.addEventListener('click', () => {
+        voiceService.cleanupAudio();
         voiceBar.hidden = true;
       });
     }

@@ -511,9 +511,9 @@ export class VoiceService {
       this.mediaRecorder = new MediaRecorder(this.mediaStream);
     }
 
-    // Stream binary audio chunks over WebSocket every 250ms (only while listening and not speaking)
+    // Stream binary audio chunks over WebSocket every 250ms (only while not playing output)
     this.mediaRecorder.ondataavailable = (event) => {
-      if (event.data && event.data.size > 0 && !this.isPlaying && this.status === 'listening') {
+      if (event.data && event.data.size > 0 && !this.isPlaying) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
           try {
             this.ws.send(event.data);
@@ -657,26 +657,42 @@ export class VoiceService {
       return;
     }
 
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      try {
-        this.mediaRecorder.stop();
-      } catch (e) {}
-    }
-
-    if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => track.stop());
-      this.mediaStream = null;
-    }
-
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
     }
 
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+    const sendStop = () => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        try {
+          this.ws.send(JSON.stringify({ type: 'stop_stream' }));
+        } catch (e) {}
+      }
+    };
+
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       try {
-        this.ws.send(JSON.stringify({ type: 'stop_stream' }));
-      } catch (e) {}
+        this.mediaRecorder.addEventListener('stop', () => {
+          sendStop();
+          if (this.mediaStream) {
+            try {
+              this.mediaStream.getTracks().forEach((track) => track.stop());
+            } catch (e) {}
+            this.mediaStream = null;
+          }
+        }, { once: true });
+        this.mediaRecorder.stop();
+      } catch (e) {
+        sendStop();
+      }
+    } else {
+      sendStop();
+      if (this.mediaStream) {
+        try {
+          this.mediaStream.getTracks().forEach((track) => track.stop());
+        } catch (e) {}
+        this.mediaStream = null;
+      }
     }
 
     if (this.status === 'listening') {
