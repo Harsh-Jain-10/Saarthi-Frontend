@@ -3099,3 +3099,250 @@ body.a11y-high-contrast a { text-decoration: underline; }
   .fixed-left-tabs { top: calc(var(--header-height-mobile) + 10px); transform: none; }
   .left-tab-convocation { display: none; }
 }
+
+
+/* ==========================================================================
+   SAARTHI FULL-DUPLEX LIVE VOICE CONVERSATION OVERLAY (ChatGPT Voice Style)
+   ========================================================================== */
+
+.srmuh-live-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background: radial-gradient(circle at 50% 20%, #0d234a 0%, #061124 70%, #030814 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px 16px 20px;
+  color: #FFFFFF;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fadeInLiveOverlay 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+}
+
+.srmuh-live-overlay[hidden] {
+  display: none !important;
+}
+
+@keyframes fadeInLiveOverlay {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.srmuh-live-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  z-index: 2;
+}
+
+.srmuh-live-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.srmuh-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(242, 100, 55, 0.2);
+  border: 1px solid rgba(242, 100, 55, 0.5);
+  color: #FFA07A;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.srmuh-live-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #F26437;
+  box-shadow: 0 0 8px #F26437;
+  animation: liveDotPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes liveDotPulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+}
+
+.srmuh-live-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #E2E8F0;
+  letter-spacing: 0.02em;
+}
+
+.srmuh-live-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #CBD5E1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.srmuh-live-close-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  transform: scale(1.05);
+}
+
+.srmuh-live-visualizer-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.srmuh-voice-canvas {
+  width: 100%;
+  max-width: 320px;
+  height: 200px;
+  display: block;
+}
+
+.srmuh-live-status-pill {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.srmuh-live-status-pill.is-speaking {
+  color: #FBBF24;
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.1);
+}
+
+.srmuh-live-status-pill.is-user-speaking {
+  color: #F87171;
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.srmuh-live-status-pill.is-thinking {
+  color: #60A5FA;
+  border-color: rgba(96, 165, 250, 0.4);
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.srmuh-live-transcript-box {
+  width: 100%;
+  min-height: 54px;
+  max-height: 75px;
+  overflow-y: auto;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.srmuh-live-transcript-text {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #CBD5E1;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.srmuh-live-transcript-text.is-user {
+  color: #FFA07A;
+}
+
+.srmuh-live-transcript-text.is-agent {
+  color: #E2E8F0;
+}
+
+.srmuh-live-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  padding-top: 4px;
+}
+
+.srmuh-live-ctrl-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.srmuh-live-ctrl-btn:hover {
+  transform: scale(1.08);
+}
+
+.srmuh-live-ctrl-btn:active {
+  transform: scale(0.95);
+}
+
+.srmuh-live-ctrl-btn.mute {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.srmuh-live-ctrl-btn.mute.is-muted {
+  background: #DC2626;
+  border-color: #EF4444;
+  box-shadow: 0 0 14px rgba(220, 38, 38, 0.6);
+}
+
+.srmuh-live-ctrl-btn.interrupt {
+  background: rgba(245, 158, 11, 0.2);
+  color: #FBBF24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.srmuh-live-ctrl-btn.interrupt:hover {
+  background: rgba(245, 158, 11, 0.35);
+}
+
+.srmuh-live-ctrl-btn.hangup {
+  background: #E11D48;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(225, 29, 72, 0.5);
+}
+
+.srmuh-live-ctrl-btn.hangup:hover {
+  background: #BE123C;
+}
