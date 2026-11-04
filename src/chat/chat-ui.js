@@ -567,17 +567,26 @@ export function initChat() {
     launcher.focus();
   }
 
-  function startLiveVoiceSession() {
+  async function startLiveVoiceSession() {
     voiceService.primeAudio();
     if (liveOverlay) {
       liveOverlay.hidden = false;
       liveOverlay.classList.add('is-active');
     }
     if (liveTranscriptText) {
-      liveTranscriptText.textContent = 'Speak naturally, I\'m listening...';
+      liveTranscriptText.textContent = 'Connecting to voice service...';
     }
     visualizer.start();
-    voiceService.startListening();
+    const ok = await voiceService.startListening();
+    if (ok) {
+      if (liveTranscriptText) {
+        liveTranscriptText.textContent = "Speak naturally, I'm listening...";
+      }
+    } else {
+      if (liveTranscriptText) {
+        liveTranscriptText.textContent = "Microphone access needed. Please check browser permissions.";
+      }
+    }
   }
 
   function endLiveVoiceSession() {

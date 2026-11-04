@@ -229,20 +229,7 @@ export class VoiceService {
       this.speakingStartTime = Date.now();
       this.setStatus('speaking');
 
-      // Connect to outputAnalyser for live visualizer wave data
-      if (this.audioContext) {
-        try {
-          if (!this.outputAnalyser) {
-            this.outputAnalyser = this.audioContext.createAnalyser();
-            this.outputAnalyser.fftSize = 256;
-          }
-          const source = this.audioContext.createMediaElementSource(this.currentAudio);
-          source.connect(this.outputAnalyser);
-          this.outputAnalyser.connect(this.audioContext.destination);
-        } catch (e) {
-          // Normal playback if source already connected
-        }
-      }
+      // Audio plays directly through speakers with high reliability
 
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         try {
