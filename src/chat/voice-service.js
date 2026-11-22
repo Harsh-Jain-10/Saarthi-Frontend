@@ -31,6 +31,9 @@ export class VoiceService {
     // Playback state
     this.currentAudio = null;
     this.audioChunks = [];
+    this.audioSegments = [];
+    this.audioStreamFinished = false;
+    this.playedAudioSegment = false;
     this.isPlaying = false;
     this.lastAnswerText = '';
     this.hasPlayedAudio = false;
@@ -159,6 +162,10 @@ export class VoiceService {
         } else if (!this.isPlaying) {
           this.setStatus(this.isContinuous ? 'listening' : 'idle');
         }
+      } else if (serverStatus === 'listening' && (this.currentAudio || this.audioSegments.length)) {
+        // The server can finish generation while queued speech is still playing.
+        // Keep the UI in speaking state until the last segment has ended.
+        return;
       } else {
         this.setStatus(serverStatus);
       }
@@ -172,7 +179,10 @@ export class VoiceService {
       this.onAnswer(data.text || '');
     } else if (type === 'audio') {
       this.handleIncomingAudio(data.data, data.streaming);
+    } else if (type === 'audio_segment_end') {
+      this.queueAudioSegment();
     } else if (type === 'audio_end') {
+      this.audioStreamFinished = true;
       this.finishAudioStream();
     } else if (type === 'interrupted') {
       this.handleInterruption();
@@ -206,80 +216,67 @@ export class VoiceService {
    * Play ElevenLabs audio and route to output analyser node
    */
   finishAudioStream() {
-    if (this.audioChunks.length === 0) {
-      if (this.lastAnswerText && !this.hasPlayedAudio) {
-        this.speakWithSpeechSynthesis(this.lastAnswerText);
-      } else {
-        this.setStatus(this.isContinuous ? 'listening' : 'idle');
+    // Backward-compatible with servers that send one audio_end for all bytes.
+    if (this.audioChunks.length) this.queueAudioSegment();
+    this.playNextAudioSegment();
+  }
+
+  queueAudioSegment() {
+    if (!this.audioChunks.length) return;
+    this.audioSegments.push([...this.audioChunks]);
+    this.audioChunks = [];
+    this.playNextAudioSegment();
+  }
+
+  playNextAudioSegment() {
+    if (this.currentAudio || this.audioSegments.length === 0) {
+      if (!this.currentAudio && this.audioStreamFinished && this.audioSegments.length === 0) {
+        if (!this.hasPlayedAudio && this.lastAnswerText) {
+          this.speakWithSpeechSynthesis(this.lastAnswerText);
+        } else {
+          this.setStatus(this.isContinuous ? 'listening' : 'idle');
+        }
       }
       return;
     }
 
-    this.stopPlayback();
-
-    const chunks = [...this.audioChunks];
-    this.audioChunks = [];
-
-    try {
-      const blob = new Blob(chunks, { type: 'audio/mp3' });
-      const audioUrl = URL.createObjectURL(blob);
-      this.currentAudio = new Audio(audioUrl);
-      this.isPlaying = true;
-      this.hasPlayedAudio = true;
-      this.speakingStartTime = Date.now();
-      this.setStatus('speaking');
-
-      // Audio plays directly through speakers with high reliability
-
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        try {
-          this.ws.send(JSON.stringify({ type: 'client_speaking_start' }));
-        } catch (e) {}
-      }
-
-      const playPromise = this.currentAudio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.warn('[VoiceService] HTMLAudio play error, falling back to speech synthesis:', err);
-          if (this.lastAnswerText) {
-            this.speakWithSpeechSynthesis(this.lastAnswerText);
-          } else {
-            this.setStatus(this.isContinuous ? 'listening' : 'idle');
-          }
-        });
-      }
-
-      const onDone = () => {
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-        this.isPlaying = false;
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-          try {
-            this.ws.send(JSON.stringify({ type: 'client_speaking_end' }));
-          } catch (e) {}
-        }
-        this.setStatus(this.isContinuous ? 'listening' : 'idle');
-      };
-
-      this.currentAudio.onended = onDone;
-      this.currentAudio.onerror = () => {
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-        this.isPlaying = false;
-        if (this.lastAnswerText) {
-          this.speakWithSpeechSynthesis(this.lastAnswerText);
-        } else {
-          onDone();
-        }
-      };
-    } catch (e) {
-      console.warn('[VoiceService] Audio playback exception:', e);
-      if (this.lastAnswerText) {
-        this.speakWithSpeechSynthesis(this.lastAnswerText);
-      } else {
-        this.setStatus(this.isContinuous ? 'listening' : 'idle');
-      }
+    const chunks = this.audioSegments.shift();
+    const audioUrl = URL.createObjectURL(new Blob(chunks, { type: 'audio/mp3' }));
+    const audio = new Audio(audioUrl);
+    this.currentAudio = audio;
+    this.isPlaying = true;
+    this.hasPlayedAudio = true;
+    this.speakingStartTime ||= Date.now();
+    this.setStatus('speaking');
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      try { this.ws.send(JSON.stringify({ type: 'client_speaking_start' })); } catch (e) {}
     }
+
+    const finishSegment = () => {
+      URL.revokeObjectURL(audioUrl);
+      if (this.currentAudio !== audio) return;
+      this.currentAudio = null;
+      this.isPlaying = false;
+      if (this.audioSegments.length) {
+        this.playNextAudioSegment();
+      } else if (this.audioStreamFinished) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+          try { this.ws.send(JSON.stringify({ type: 'client_speaking_end' })); } catch (e) {}
+        }
+        this.setStatus(this.isContinuous ? 'listening' : 'idle');
+      }
+    };
+    audio.onended = finishSegment;
+    audio.onerror = () => {
+      finishSegment();
+      if (!this.playedAudioSegment && this.lastAnswerText) this.speakWithSpeechSynthesis(this.lastAnswerText);
+    };
+    audio.onplaying = () => { this.playedAudioSegment = true; };
+    audio.play().catch((err) => {
+      console.warn('[VoiceService] Audio play error:', err);
+      finishSegment();
+      if (!this.playedAudioSegment && this.lastAnswerText) this.speakWithSpeechSynthesis(this.lastAnswerText);
+    });
   }
 
   /**
@@ -376,6 +373,9 @@ export class VoiceService {
 
     this.isPlaying = false;
     this.audioChunks = [];
+    this.audioSegments = [];
+    this.audioStreamFinished = false;
+    this.playedAudioSegment = false;
   }
 
   /**
@@ -409,6 +409,9 @@ export class VoiceService {
     this.lastAnswerText = '';
     this.hasPlayedAudio = false;
     this.audioChunks = [];
+    this.audioSegments = [];
+    this.audioStreamFinished = false;
+    this.playedAudioSegment = false;
 
     if (this.isPlaying) {
       this.interrupt();
