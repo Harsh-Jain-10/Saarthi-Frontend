@@ -19,6 +19,35 @@
 
 import { CHAT_CONFIG } from './chat-config.js';
 
+function publishServiceStatus(status) {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('saarthi-service-status', { detail: { status } }));
+  }
+}
+
+export async function checkChatService() {
+  if (!CHAT_CONFIG.CHAT_API_URL || typeof window === 'undefined') return 'offline';
+  const healthUrl = new URL(CHAT_CONFIG.CHAT_API_URL, window.location.href);
+  healthUrl.pathname = healthUrl.pathname.replace(/\/chat\/?$/, '/health');
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 2500);
+  try {
+    const response = await fetch(healthUrl, { signal: controller.signal });
+    if (!response.ok) throw new Error(`Health check returned ${response.status}`);
+    const health = await response.json();
+    const status = health.status === 'ok'
+      ? (health.groq_llm ? 'online' : 'degraded')
+      : 'offline';
+    publishServiceStatus(status);
+    return status;
+  } catch {
+    publishServiceStatus('offline');
+    return 'offline';
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
 export async function sendMessage(query, sessionId = 'default-session') {
   // If a real backend URL is configured, make real network request
   if (CHAT_CONFIG.CHAT_API_URL && CHAT_CONFIG.CHAT_API_URL.trim() !== '') {
@@ -39,21 +68,23 @@ export async function sendMessage(query, sessionId = 'default-session') {
       }
 
       const data = await response.json();
+      publishServiceStatus('online');
       return {
         answer: data.answer || "Thank you for contacting SRMUH. Our admissions team will reach out to you.",
         sources: Array.isArray(data.sources) ? data.sources : []
       };
     } catch (err) {
       console.warn("[ChatService] Saarthi information service is unavailable:", err);
+      publishServiceStatus('offline');
       return {
-        answer: "Saarthi’s live information service is currently unreachable, so I can’t verify an answer right now. You can browse the programme catalogue or tuition schedule, or contact admissions at +91 88160 33301.",
-        sources: ['#page/programmes', '#page/fees', 'https://srmuniversity.ac.in/']
+        answer: "I can’t reach the student-support service right now. Please try again shortly.",
+        sources: []
       };
     }
   }
 
   return {
-    answer: "Saarthi’s live information service is not configured in this demo. You can browse the programme catalogue or tuition schedule, or contact admissions at +91 88160 33301.",
-    sources: ['#page/programmes', '#page/fees', 'https://srmuniversity.ac.in/']
+    answer: "The student-support service is not configured yet. Please try again shortly.",
+    sources: []
   };
 }

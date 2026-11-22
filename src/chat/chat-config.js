@@ -34,7 +34,7 @@ export const CHAT_CONFIG = {
   BOT_NAME: runtimeConfig.BOT_NAME || "Saarthi AI",
 
   DISABLED_GREETING: "Hi! I'm coming soon. Chat support will be available shortly.",
-  ENABLED_GREETING: "Hi! I'm Saarthi, your campus AI assistant for SRM University Delhi-NCR. Ask me anything about admissions, courses, fees, placements, or campus life!",
+  ENABLED_GREETING: "Hello, I’m Saarthi, your student-support assistant. I can help with programmes, fees, admissions, scholarships, hostel, placements, and campus services. What would you like to check?",
 
   DISABLED_PLACEHOLDER: "Chat will be available soon",
   ENABLED_PLACEHOLDER: "Ask me about admissions, fees, courses..."

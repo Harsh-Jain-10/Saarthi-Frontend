@@ -1,5 +1,5 @@
 import { CHAT_CONFIG } from './chat-config.js';
-import { sendMessage } from './chat-service.js';
+import { sendMessage, checkChatService } from './chat-service.js';
 import { VoiceService } from './voice-service.js';
 
 export function initChat() {
@@ -59,7 +59,7 @@ export function initChat() {
           </div>
           <div>
             <h2 id="srmuh-chat-title" class="srmuh-chat-title">${CHAT_CONFIG.BOT_NAME}</h2>
-            <span class="srmuh-chat-status">${isEnabled ? '● Assistant enabled · live service required' : '○ Standby Mode'}</span>
+            <span class="srmuh-chat-status" id="srmuh-chat-status" aria-live="polite">${isEnabled ? '● Connecting to student support…' : '○ Standby mode'}</span>
           </div>
         </div>
         <button type="button" class="srmuh-chat-close-btn" id="srmuh-chat-close" aria-label="Close chat window">
@@ -185,6 +185,7 @@ export function initChat() {
   const dialog = document.getElementById('srmuh-chat-dialog');
   const closeBtn = document.getElementById('srmuh-chat-close');
   const chatBody = document.getElementById('srmuh-chat-body');
+  const serviceStatus = document.getElementById('srmuh-chat-status');
   const chatForm = document.getElementById('srmuh-chat-form');
   const chatInput = document.getElementById('srmuh-chat-input');
   const sendBtn = document.getElementById('srmuh-chat-send');
@@ -192,6 +193,24 @@ export function initChat() {
   const voiceBar = document.getElementById('srmuh-voice-bar');
   const voiceStatusText = document.getElementById('srmuh-voice-status-text');
   const voiceCancelBtn = document.getElementById('srmuh-voice-cancel');
+
+  const serviceStatusText = {
+    checking: '● Connecting to student support…',
+    online: '● Student support is online',
+    degraded: '● Student support is available',
+    offline: '○ Student support is temporarily unavailable',
+    disabled: '○ Standby mode',
+  };
+  const updateServiceStatus = (status) => {
+    if (!serviceStatus) return;
+    serviceStatus.textContent = serviceStatusText[status] || serviceStatusText.offline;
+    serviceStatus.dataset.state = status;
+  };
+  window.addEventListener('saarthi-service-status', (event) => {
+    updateServiceStatus(event.detail?.status || 'offline');
+  });
+  if (isEnabled) checkChatService();
+  else updateServiceStatus('disabled');
 
   // Track active message bubble elements during voice stream
   let interimUserBubble = null;
@@ -379,39 +398,6 @@ export function initChat() {
       typingIndicator.remove();
       typingIndicator = null;
     }
-  }
-
-  function appendSources(bubble, sources) {
-    const validSources = (Array.isArray(sources) ? sources : []).map(source => {
-      const url = typeof source === 'string' ? source : source?.url || source?.href;
-      const label = typeof source === 'object' ? source.title || source.label : '';
-      if (typeof url !== 'string' || !(/^(https?:\/\/|#page\/[a-z0-9-]+$)/i).test(url)) return null;
-      const isInternal = url.startsWith('#page/');
-      let text = label || (isInternal ? ({'#page/programmes':'Programme catalogue','#page/fees':'Tuition fees'}[url] || 'Open page') : 'Official university source');
-      if (!label && !isInternal) {
-        try { text = new URL(url).hostname.replace(/^www\./, ''); } catch { /* use generic */ }
-      }
-      return { url, text, isInternal };
-    }).filter(Boolean);
-    if (!validSources.length) return;
-
-    const list = document.createElement('div');
-    list.className = 'srmuh-message-sources';
-    const label = document.createElement('span');
-    label.textContent = 'Sources';
-    list.appendChild(label);
-    validSources.forEach(source => {
-      const link = document.createElement('a');
-      link.href = source.url;
-      link.textContent = source.text;
-      if (source.isInternal) link.dataset.route = source.url.slice('#page/'.length);
-      else {
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-      }
-      list.appendChild(link);
-    });
-    bubble.appendChild(list);
   }
 
   // Initialize Real-time Full-Duplex Voice Service
@@ -726,7 +712,6 @@ export function initChat() {
         const assistantBubble = document.createElement('div');
         assistantBubble.className = 'srmuh-message-bubble assistant';
         assistantBubble.textContent = response.answer;
-        appendSources(assistantBubble, response.sources);
         chatBody.appendChild(assistantBubble);
       } catch (err) {
         removeTypingIndicator();

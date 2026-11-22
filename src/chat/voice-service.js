@@ -34,6 +34,8 @@ export class VoiceService {
     this.audioSegments = [];
     this.audioStreamFinished = false;
     this.playedAudioSegment = false;
+    this.turnMetricStartedAt = null;
+    this.firstPlaybackMetricLogged = false;
     this.isPlaying = false;
     this.lastAnswerText = '';
     this.hasPlayedAudio = false;
@@ -126,6 +128,9 @@ export class VoiceService {
       };
 
       this.ws.onclose = () => {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('saarthi-service-status', { detail: { status: 'offline' } }));
+        }
         if (this.status !== 'idle') {
           this.setStatus('idle');
         }
@@ -153,6 +158,9 @@ export class VoiceService {
     if (type === 'status') {
       const serverStatus = data.status;
       if (serverStatus === 'ready') {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('saarthi-service-status', { detail: { status: 'online' } }));
+        }
         if (this.status === 'idle') {
           this.setStatus('idle');
         }
@@ -171,6 +179,9 @@ export class VoiceService {
       }
     } else if (type === 'transcript') {
       this.onTranscript(data.text, Boolean(data.is_final));
+    } else if (type === 'turn_started') {
+      this.turnMetricStartedAt = performance.now();
+      this.firstPlaybackMetricLogged = false;
     } else if (type === 'answer_chunk') {
       this.lastAnswerText = (this.lastAnswerText || '') + (data.delta || '');
       this.onAnswerChunk(data.delta || '');
@@ -271,7 +282,14 @@ export class VoiceService {
       finishSegment();
       if (!this.playedAudioSegment && this.lastAnswerText) this.speakWithSpeechSynthesis(this.lastAnswerText);
     };
-    audio.onplaying = () => { this.playedAudioSegment = true; };
+    audio.onplaying = () => {
+      this.playedAudioSegment = true;
+      if (this.turnMetricStartedAt !== null && !this.firstPlaybackMetricLogged) {
+        const elapsed = Math.round(performance.now() - this.turnMetricStartedAt);
+        console.info(`[VoiceMetrics] final_transcript_to_first_playback_ms=${elapsed}`);
+        this.firstPlaybackMetricLogged = true;
+      }
+    };
     audio.play().catch((err) => {
       console.warn('[VoiceService] Audio play error:', err);
       finishSegment();
