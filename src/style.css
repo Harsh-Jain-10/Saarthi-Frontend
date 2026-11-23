@@ -548,9 +548,16 @@ button {
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
   text-decoration: none;
   flex-shrink: 0;
+}
+
+.brand-logo-image {
+  display: block;
+  width: clamp(150px, 19vw, 220px);
+  height: 60px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .brand-emblem-svg {
@@ -2765,8 +2772,15 @@ button {
 .footer-logo-lockup {
   display: flex;
   align-items: center;
-  gap: 12px;
   margin-bottom: 20px;
+}
+
+.footer-logo-image {
+  display: block;
+  width: min(100%, 280px);
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .footer-brand-title {
